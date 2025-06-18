@@ -7,3 +7,4 @@ pub const slow_src = "./slow.cc";
 pub const slow_exe = "./slow";
 pub const vscode_dir = "./.vscode";
 pub const c_cpp_properties = "./c_cpp_properties.json";
+pub const clang_format = "./.clang_format";

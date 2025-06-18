@@ -40,6 +40,14 @@ pub fn ini(name: []const u8) !void {
         },
         else => return e,
     };
+    _ = subdir.statFile(path.clang_format) catch |e| switch (e) {
+        error.FileNotFound => {
+            const f = try subdir.createFile(path.clang_format, .{});
+            defer f.close();
+            try f.writeAll(@embedFile("starterfiles/.clang-format"));
+        },
+        else => return e,
+    };
 
     subdir.makeDir(path.vscode_dir) catch |e| switch (e) {
         error.PathAlreadyExists => {},
