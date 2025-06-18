@@ -17,45 +17,68 @@ using namespace __gnu_pbds;
 #pragma endregion
 #pragma region types
 
-using str                                 = string;
-using z                                   = long long;
-const z    inf                            = numeric_limits<z>::max();
-const auto gtz                            = greater<z>();
+using str                        = string;
+using z                          = long long;
+const z    inf                   = numeric_limits<z>::max();
+const auto gtz                   = greater<z>();
+using pz                         = pair<z, z>;
 
-template <size_t N, typename T> using arr = array<T, N>;
-template <size_t N> using az              = arr<N, z>;
-template <size_t N, size_t M> using aaz   = arr<N, az<M>>;
-template <size_t N> using apz             = arr<N, pair<z, z>>;
+template <typename T> using vec  = vector<T>;
+using vz                         = vec<z>;
+using vpz                        = vec<pz>;
+using vvz                        = vec<vz>;
 
-template <typename T> using vec           = vector<T>;
-using vz                                  = vec<z>;
-using vpz                                 = vec<pair<z, z>>;
-using vvz                                 = vec<vz>;
+template <typename T> using mset = multiset<T>;
 
-template <typename T> using mset          = multiset<T>;
-
-using gnu_setz =
+using statset =
     tree<z, null_type, less<z>, rb_tree_tag, tree_order_statistics_node_update>;
+using statmset = tree<pz, null_type, less<pz>, rb_tree_tag,
+                      tree_order_statistics_node_update>;
 
 #pragma endregion
 #pragma region macros
 
-#define var                  auto
+#define var                    auto
+#define ref                    auto &
 
-#define all(x)               x.begin(), x.end()
-#define asc0(i, stop)        for (z i = 0; i < stop; i += 1)
-#define asc(i, start, stop)  for (z i = start; i < stop; i += 1)
-#define desc(i, start, stop) for (z i = start; i > stop; i -= 1)
-#define subsp(items, count)  span(items).subspan(0, count)
-#define nl                   '\n'
+#define all(x)                 x.begin(), x.end()
+#define ascz(i, stop)          for (z i = 0; i < stop; i += 1)
+#define asc(i, start, stop)    for (z i = start; i < stop; i += 1)
+#define dsc(i, start, stop)    for (z i = start; i > stop; i -= 1)
+#define forch(vars, container) for (ref vars : container)
+#define imax(store, consider)  store = max(store, consider)
+#define elif                   else if
+#define mpair                  make_pair
+#define mtup                   make_tuple
 
-#define ALL                  cin.tie
-#define YOUR                 (nullptr)
-#define CONTESTS             ;
-#define ARE                  cin.sync_with_stdio
-#define BELONG               (false);
-#define TO                   cout << fixed << setprecision(9)
-#define US                   ;
+#define SIZE                   .size()
+#define BEGIN                  .begin()
+#define END                    .end()
+#define REND                   .rend()
+#define RBEGIN                 .rbegin()
+#define FRONT                  .front()
+#define BACK                   .back()
+
+#define zin                    cin >>
+#define zout                   cout <<
+#define zerr                   cerr <<
+#define sp                     ' '
+#define nl                     '\n'
+
+#define sar(n_reserve, n, t, name)                                             \
+    static array<t, n_reserve> __static_##name;                                \
+    span<t>                    name = span(__static_##name).subspan(0, n);
+#define sarz(n_reserve, n, name)                                               \
+    static array<z, n_reserve> __static_##name;                                \
+    span<z>                    name = span(__static_##name).subspan(0, n);
+
+#define ALL      cin.tie
+#define YOUR     (nullptr)
+#define CONTESTS ;
+#define ARE      cin.sync_with_stdio
+#define BELONG   (false);
+#define TO       cout << fixed << setprecision(9)
+#define US       ;
 
 #pragma endregion
 #pragma region debugprint
@@ -223,44 +246,44 @@ void _p(const Head &H, const Tail &...T)
 #endif
 
 #pragma endregion
-#pragma region inputs
+#pragma region io
 
-template <typename... T> void input(T &...a)
+template <typename... T> void in(T &...a)
 {
     ((cin >> a), ...);
 }
 
-template <size_t N, typename T> void input_a(z n, arr<N, T> &a)
-{
-    asc0(i, n) cin >> a[i];
-}
+// template <size_t N, typename T> void input_a(z n, arr<N, T> &a)
+// {
+//     ascz(i, n) cin >> a[i];
+// }
 
-template <size_t N, typename T, typename U>
-void input_ap(z n, arr<N, pair<T, U>> &a)
-{
-    asc0(i, n) cin >> a[i].first >> a[i].second;
-}
+// template <size_t N, typename T, typename U>
+// void input_ap(z n, arr<N, pair<T, U>> &a)
+// {
+//     ascz(i, n) cin >> a[i].first >> a[i].second;
+// }
 
-template <size_t N, size_t M, typename T>
-void input_aa(z n, z m, arr<N, arr<M, T>> &a)
-{
-    asc0(i, n) asc0(j, m) cin >> a[i][j];
-}
+// template <size_t N, size_t M, typename T>
+// void input_aa(z n, z m, arr<N, arr<M, T>> &a)
+// {
+//     ascz(i, n) ascz(j, m) cin >> a[i][j];
+// }
 
-template <typename T> void input_v(vec<T> &v)
-{
-    asc0(i, size(v)) cin >> v[i];
-}
+// template <typename T> void input_v(vec<T> &v)
+// {
+//     ascz(i, size(v)) cin >> v[i];
+// }
 
-template <typename T, typename U> void input_vp(vec<pair<T, U>> &v)
-{
-    asc0(i, size(v)) cin >> v[i].first >> v[i].second;
-}
+// template <typename T, typename U> void input_vp(vec<pair<T, U>> &v)
+// {
+//     ascz(i, size(v)) cin >> v[i].first >> v[i].second;
+// }
 
-template <typename T> void input_vv(vec<vec<T>> &v)
-{
-    asc0(i, size(v)) asc0(j, size(v[i])) cin >> v[i][j];
-}
+// template <typename T> void input_vv(vec<vec<T>> &v)
+// {
+//     ascz(i, size(v)) ascz(j, size(v[i])) cin >> v[i][j];
+// }
 
 #pragma endregion
 #pragma region algos
@@ -277,6 +300,8 @@ var mq_er(deque<z> &mq, z x)
 }
 
 #pragma endregion
+
+const z N = -19'06'2025;
 
 int main()
 {
