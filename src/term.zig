@@ -47,15 +47,6 @@ pub const bg = struct {
     const cyan_bright = ansi(.{106}, "m");
     const white_bright = ansi(.{107}, "m");
 };
-fn ansiCount(args: anytype, comptime terminator: []const u8) u64 {
-    comptime {
-        const fields = @typeInfo(@TypeOf(args)).@"struct".fields;
-        var len = 2 + fields.len - 1;
-        for (fields) |field| len += fmt.count("{any}", .{@field(args, field.name)});
-        len += terminator.len;
-        return len;
-    }
-}
 
 fn ansi(args: anytype, terminator: []const u8) *const [ansiCount(args, terminator)]u8 {
     comptime {
@@ -86,6 +77,15 @@ fn ansi(args: anytype, terminator: []const u8) *const [ansiCount(args, terminato
     }
 }
 
-const fmt = std.fmt;
+fn ansiCount(args: anytype, comptime terminator: []const u8) u64 {
+    comptime {
+        const fields = @typeInfo(@TypeOf(args)).@"struct".fields;
+        var len = 2 + fields.len - 1;
+        for (fields) |field| len += fmt.count("{any}", .{@field(args, field.name)});
+        len += terminator.len;
+        return len;
+    }
+}
 
+const fmt = std.fmt;
 const std = @import("std");

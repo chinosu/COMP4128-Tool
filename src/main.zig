@@ -6,35 +6,28 @@ pub fn main() !void {
     var args = process.argsWithAllocator(alloc) catch unreachable;
     defer args.deinit();
     assert(args.skip());
-    const command = args.next() orelse return log.err("enter a command", .{});
+    const c = args.next() orelse return log.err("enter a command", .{});
 
-    if (mem.eql(u8, command, "ini")) {
+    if (mem.eql(u8, c, "ini")) {
         const name = args.next() orelse return log.err("you must specify a name", .{});
         try cmd.ini(name);
-    } else if (mem.eql(u8, command, "t") or mem.eql(u8, command, "test")) {
+    } else if (mem.eql(u8, c, "t") or mem.eql(u8, c, "test")) {
         try cmd.tests(alloc);
-    } else if (mem.eql(u8, command, "f") or mem.eql(u8, command, "fuzz")) {
+    } else if (mem.eql(u8, c, "f") or mem.eql(u8, c, "fuzz")) {
         try cmd.fuzz(alloc);
     } else {
-        return log.err("unrecognized command '{s}'", .{cmd});
+        return log.err("unrecognized command '{s}'", .{c});
     }
 }
 
 const cmd = @import("cmd.zig");
 
-const List = std.ArrayListUnmanaged;
-const MList = std.ArrayList;
 const assert = std.debug.assert;
 
 const log = std.log;
 const mem = std.mem;
 const process = std.process;
 const heap = std.heap;
-const Random = std.Random;
-const time = std.time;
-const fs = std.fs;
-const fmt = std.fmt;
-const DynLib = std.DynLib;
 
 const std = @import("std");
 const builtin = @import("builtin");

@@ -5,7 +5,6 @@ pub fn ini(name: []const u8) !void {
         error.PathAlreadyExists => {},
         else => return e,
     };
-
     var subdir = try dir.openDir(name, .{});
     defer subdir.close();
 
@@ -38,6 +37,22 @@ pub fn ini(name: []const u8) !void {
             const f = try subdir.createFile(path.slow_src, .{});
             defer f.close();
             try f.writeAll(@embedFile("starterfiles/main.cc"));
+        },
+        else => return e,
+    };
+
+    subdir.makeDir(path.vscode_dir) catch |e| switch (e) {
+        error.PathAlreadyExists => {},
+        else => return e,
+    };
+    var vscode_dir = try subdir.openDir(path.vscode_dir, .{});
+    defer vscode_dir.close();
+
+    _ = vscode_dir.statFile(path.src) catch |e| switch (e) {
+        error.FileNotFound => {
+            const f = try vscode_dir.createFile(path.c_cpp_properties, .{});
+            defer f.close();
+            try f.writeAll(@embedFile("starterfiles/c_cpp_properties.json"));
         },
         else => return e,
     };
@@ -269,11 +284,9 @@ const assert = std.debug.assert;
 const log = std.log;
 const mem = std.mem;
 const process = std.process;
-const heap = std.heap;
 const Random = std.Random;
 const time = std.time;
 const fs = std.fs;
-const fmt = std.fmt;
 const DynLib = std.DynLib;
 
 const std = @import("std");
