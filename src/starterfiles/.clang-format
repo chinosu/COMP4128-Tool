@@ -1,0 +1,42 @@
+BasedOnStyle: LLVM
+
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+BreakBeforeBraces: Allman
+BraceWrapping:
+  AfterClass: true
+  AfterControlStatement: true
+  AfterEnum: true
+  AfterFunction: true
+  AfterNamespace: true
+  AfterStruct: true
+  AfterUnion: true
+  BeforeCatch: true
+  BeforeElse: true
+  IndentBraces: false
+
+AllowShortIfStatementsOnASingleLine: AllIfsAndElse
+AllowShortLoopsOnASingleLine: true
+
+ConstructorInitializerAllOnOneLineOrOnePerLine: false
+BreakConstructorInitializersBeforeComma: true
+
+ColumnLimit: 120
+PenaltyBreakBeforeFirstCallParameter: 19
+PenaltyBreakComment: 300
+
+SortIncludes: true
+IncludeBlocks: Preserve
+
+SpaceBeforeParens: ControlStatements
+SpaceAfterCStyleCast: true
+
+AlignAfterOpenBracket: Align
+AlignOperands: true
+AlignConsecutiveAssignments: true
+AlignConsecutiveDeclarations: true
+AlignTrailingComments: true
+AlwaysBreakTemplateDeclarations: Yes
+
+NamespaceIndentation: All
