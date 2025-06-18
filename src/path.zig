@@ -1,0 +1,9 @@
+pub const src = "./main.cc";
+pub const exe = "./main";
+pub const tests = "./tests.txt";
+pub const gen = "./gen.zig";
+pub const genlib = "libgen.dylib";
+pub const slow_src = "./slow.cc";
+pub const slow_exe = "./slow";
+pub const vsc_dir = "./.vscode";
+pub const c_cpp_properties = "./c_cpp_properties.json";
