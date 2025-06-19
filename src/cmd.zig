@@ -114,16 +114,26 @@ pub fn tests(alloc: mem.Allocator) !void {
         proc.stdin_behavior = .Pipe;
         proc.stdout_behavior = .Pipe;
         proc.stderr_behavior = .Pipe;
-        var out = try List(u8).initCapacity(alloc, 128);
-        defer out.deinit(alloc);
-        var err = try List(u8).initCapacity(alloc, 128);
-        defer err.deinit(alloc);
         try proc.spawn();
         try proc.stdin.?.writeAll(in.items[i].items);
-        try proc.collectOutput(alloc, &out, &err, 8192);
+
+        var poll = io.poll(alloc, enum { out, err }, .{ .out = proc.stdout.?, .err = proc.stderr.? });
+        defer poll.deinit();
+        while (try poll.poll()) {
+            if (poll.fifo(.out).count > 2048) {
+                log.warn("test {d} stopped ({d} bytes from stdout)", .{ i + 1, poll.fifo(.out).count });
+                _ = try proc.kill();
+            }
+            if (poll.fifo(.err).count > 2048) {
+                log.warn("test {d} stopped ({d} bytes from stderr)", .{ i + 1, poll.fifo(.err).count });
+                _ = try proc.kill();
+            }
+        }
+        const out = poll.fifo(.out).buf[0..poll.fifo(.out).count];
+        const err = poll.fifo(.err).buf[0..poll.fifo(.err).count];
         _ = try proc.wait();
 
-        if (mem.eql(u8, exp_out.items[i].items, out.items)) {
+        if (mem.eql(u8, exp_out.items[i].items, out)) {
             log.info("test {d} pass", .{i + 1});
             continue;
         }
@@ -137,7 +147,7 @@ pub fn tests(alloc: mem.Allocator) !void {
         while (exp_out_it.next()) |line| width = @max(width, 4 + line.len);
         exp_out_it.reset();
 
-        var out_it = mem.tokenizeScalar(u8, out.items, '\n');
+        var out_it = mem.tokenizeScalar(u8, out, '\n');
         while (exp_out_it.peek() != null or out_it.peek() != null) {
             const outex_line = exp_out_it.next() orelse "";
             const out_line = out_it.next() orelse "";
@@ -150,7 +160,7 @@ pub fn tests(alloc: mem.Allocator) !void {
             log.info("  {s}", .{buf});
         }
 
-        var err_it = mem.tokenizeScalar(u8, err.items, '\n');
+        var err_it = mem.tokenizeScalar(u8, err, '\n');
         while (err_it.next()) |line| log.info("  (err) {s}", .{line});
     }
 }
@@ -261,9 +271,9 @@ fn cxx_compile(alloc: mem.Allocator, src: []const u8, exe: []const u8, opts: enu
     cxx.stderr_behavior = .Pipe;
 
     try cxx.spawn();
-    const full_err = try alloc.alloc(u8, 8192);
-    defer alloc.free(full_err);
-    const err = full_err[0..try cxx.stderr.?.readAll(full_err)];
+    const err_buf = try alloc.alloc(u8, 8192);
+    defer alloc.free(err_buf);
+    const err = err_buf[0..try cxx.stderr.?.readAll(err_buf)];
 
     if (err.len != 0) {
         var lines = mem.tokenizeScalar(u8, err, '\n');
@@ -289,6 +299,7 @@ const List = std.ArrayListUnmanaged;
 const MList = std.ArrayList;
 const assert = std.debug.assert;
 
+const io = std.io;
 const log = std.log;
 const mem = std.mem;
 const process = std.process;
