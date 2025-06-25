@@ -17,18 +17,20 @@ using namespace __gnu_pbds;
 #pragma endregion
 #pragma region types
 
-using str                        = string;
-using z                          = long long;
-const z    inf                   = numeric_limits<z>::max();
-const auto gtz                   = greater<z>();
-using pz                         = pair<z, z>;
+using str                                    = string;
+using z                                      = long long;
+const z    inf                               = numeric_limits<z>::max();
+const auto gtz                               = greater<z>();
+using pz                                     = pair<z, z>;
 
-template <typename T> using vec  = vector<T>;
-using vz                         = vec<z>;
-using vpz                        = vec<pz>;
-using vvz                        = vec<vz>;
+template <typename T> using vec              = vector<T>;
+using vz                                     = vec<z>;
+using vpz                                    = vec<pz>;
+using vvz                                    = vec<vz>;
 
-template <typename T> using mset = multiset<T>;
+template <typename T> using mset             = multiset<T>;
+
+template <size_t n, typename kind> using arr = array<kind, n>;
 
 using statset =
     tree<z, null_type, less<z>, rb_tree_tag, tree_order_statistics_node_update>;
@@ -38,42 +40,39 @@ using statmset = tree<pz, null_type, less<pz>, rb_tree_tag,
 #pragma endregion
 #pragma region macros
 
-#define var                    auto
-#define ref                    auto &
+#define var                 auto
+#define ref                 auto &
 
-#define all(x)                 x.begin(), x.end()
-#define ascz(i, stop)          for (z i = 0; i < stop; i += 1)
-#define asc(i, start, stop)    for (z i = start; i < stop; i += 1)
-#define dsc(i, start, stop)    for (z i = start; i > stop; i -= 1)
-#define forch(vars, container) for (ref vars : container)
-#define ifnot(cond)            if (!(cond))
-#define imax(store, consider)  store = max(store, consider)
-#define elif                   else if
-#define mpair                  make_pair
-#define mtup                   make_tuple
+#define all(x)              x.begin(), x.end()
+#define ascz(i, stop)       for (z i = 0; i < stop; i += 1)
+#define asc(i, start, stop) for (z i = start; i < stop; i += 1)
+#define dsc(i, start, stop) for (z i = start; i > stop; i -= 1)
+#define forch(item, items)  for (ref item : items)
+#define ifnot(cond)         if (!(cond))
+#define elif                else if
+#define imin(a, b)          a = min(a, b);
+#define imax(a, b)          a = max(a, b);
+#define iamod(a, b, m)      a = (a + b) % m
 
-#define SIZE                   .size()
-#define BEGIN                  .begin()
-#define END                    .end()
-#define REND                   .rend()
-#define RBEGIN                 .rbegin()
-#define FRONT                  .front()
-#define BACK                   .back()
+#define SIZE                .size()
+#define BEGIN               .begin()
+#define END                 .end()
+#define REND                .rend()
+#define RBEGIN              .rbegin()
+#define FRONT               .front()
+#define BACK                .back()
 
-#define zin                    cin >>
-#define zout                   cout <<
-#define zerr                   cerr <<
-#define sp                     ' '
-#define nl                     '\n'
-#define znl                    << nl;
+#define out                 cout <<
+#define err                 cerr <<
+#define nl                  << '\n';
 
-#define ALL                    cin.tie
-#define YOUR                   (nullptr)
-#define CONTESTS               ;
-#define ARE                    cin.sync_with_stdio
-#define BELONG                 (false);
-#define TO                     cout << fixed << setprecision(9)
-#define US                     ;
+#define ALL                 cin.tie
+#define YOUR                (nullptr)
+#define CONTESTS            ;
+#define ARE                 cin.sync_with_stdio
+#define BELONG              (false);
+#define TO                  cout << fixed << setprecision(9)
+#define US                  ;
 
 #pragma endregion
 #pragma region debugprint
@@ -150,6 +149,7 @@ template <typename... A> void __p(const tuple<A...> &t);
 template <typename T> void __p(stack<T> s);
 template <typename T> void __p(queue<T> q);
 template <typename T, typename... U> void __p(priority_queue<T, U...> q);
+template <size_t N> void __p(bitset<N> q);
 
 template <typename A> void __p(const A &x)
 {
@@ -219,6 +219,11 @@ template <typename T, typename... U> void __p(priority_queue<T, U...> q)
     __p(v);
 }
 
+template <size_t N> void __p(bitset<N> q)
+{
+    cerr << q;
+}
+
 void _p()
 {
     cerr << "]\n";
@@ -249,21 +254,27 @@ template <typename... T> void in(T &...a)
 }
 
 #pragma endregion
-#pragma region bss array
+#pragma region                          eternal/global
 
-template <size_t _, size_t max_n, typename kind> array<kind, max_n> __val;
+template <size_t _, typename kind> kind __globalval;
 
-template <size_t id> struct __bss_array
+template <size_t id> struct __global
 {
     template <size_t max_n, typename kind>
-    constexpr static auto __call(size_t n)
+    consteval static auto __arr(size_t n = max_n)
     {
-        return span(__val<id, max_n, kind>).subspan(0, n);
+        return span(__globalval<id, arr<max_n, kind>>).subspan(0, n);
     }
+
+    // template <typename kind>
+    // static kind &__ref()
+    // {
+    //     return __globalval<id, kind>;
+    // }
 };
 
-// #define bss_array __bss_array<__LINE__>::__call
-#define bss_array __bss_array<__COUNTER__>::__call
+#define bss_arr __global<__COUNTER__>::__arr // or __LINE__?
+// #define eternal __global<__COUNTER__>::__ref
 
 #pragma endregion
 #pragma region algos
@@ -280,8 +291,6 @@ var mq_er(deque<z> &mq, z x)
 }
 
 #pragma endregion
-
-const z N = -25'06'2025;
 
 int main()
 {
