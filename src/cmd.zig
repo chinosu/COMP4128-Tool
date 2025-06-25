@@ -120,11 +120,11 @@ pub fn tests(alloc: mem.Allocator) !void {
         var poll = io.poll(alloc, enum { out, err }, .{ .out = proc.stdout.?, .err = proc.stderr.? });
         defer poll.deinit();
         while (try poll.poll()) {
-            if (poll.fifo(.out).count > 2048) {
+            if (poll.fifo(.out).count > 8192) {
                 log.warn("test {d} stopped ({d} bytes from stdout)", .{ i + 1, poll.fifo(.out).count });
                 _ = try proc.kill();
             }
-            if (poll.fifo(.err).count > 2048) {
+            if (poll.fifo(.err).count > 8192) {
                 log.warn("test {d} stopped ({d} bytes from stderr)", .{ i + 1, poll.fifo(.err).count });
                 _ = try proc.kill();
             }
