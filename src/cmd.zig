@@ -185,10 +185,7 @@ pub fn fuzz(alloc: mem.Allocator) !void {
 
     switch ((try zig.wait()).Exited) {
         0 => log.info("compile success {s}", .{path.gen}),
-        else => |c| {
-            log.err("compile exit {d} for {s}", .{ c, path.gen });
-            return;
-        },
+        else => |c| return log.err("compile exit {d} for {s}", .{ c, path.gen }),
     }
 
     const gen_t = *const fn (*Random, *MList(u8)) bool;

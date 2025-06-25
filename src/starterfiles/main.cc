@@ -46,6 +46,7 @@ using statmset = tree<pz, null_type, less<pz>, rb_tree_tag,
 #define asc(i, start, stop)    for (z i = start; i < stop; i += 1)
 #define dsc(i, start, stop)    for (z i = start; i > stop; i -= 1)
 #define forch(vars, container) for (ref vars : container)
+#define ifnot(cond)            if (!(cond))
 #define imax(store, consider)  store = max(store, consider)
 #define elif                   else if
 #define mpair                  make_pair
@@ -64,21 +65,15 @@ using statmset = tree<pz, null_type, less<pz>, rb_tree_tag,
 #define zerr                   cerr <<
 #define sp                     ' '
 #define nl                     '\n'
+#define znl                    << nl;
 
-#define sar(n_reserve, n, t, name)                                             \
-    static array<t, n_reserve> __static_##name;                                \
-    span<t>                    name = span(__static_##name).subspan(0, n);
-#define sarz(n_reserve, n, name)                                               \
-    static array<z, n_reserve> __static_##name;                                \
-    span<z>                    name = span(__static_##name).subspan(0, n);
-
-#define ALL      cin.tie
-#define YOUR     (nullptr)
-#define CONTESTS ;
-#define ARE      cin.sync_with_stdio
-#define BELONG   (false);
-#define TO       cout << fixed << setprecision(9)
-#define US       ;
+#define ALL                    cin.tie
+#define YOUR                   (nullptr)
+#define CONTESTS               ;
+#define ARE                    cin.sync_with_stdio
+#define BELONG                 (false);
+#define TO                     cout << fixed << setprecision(9)
+#define US                     ;
 
 #pragma endregion
 #pragma region debugprint
@@ -253,37 +248,22 @@ template <typename... T> void in(T &...a)
     ((cin >> a), ...);
 }
 
-// template <size_t N, typename T> void input_a(z n, arr<N, T> &a)
-// {
-//     ascz(i, n) cin >> a[i];
-// }
+#pragma endregion
+#pragma region bss array
 
-// template <size_t N, typename T, typename U>
-// void input_ap(z n, arr<N, pair<T, U>> &a)
-// {
-//     ascz(i, n) cin >> a[i].first >> a[i].second;
-// }
+template <size_t _, size_t max_n, typename kind> array<kind, max_n> __val;
 
-// template <size_t N, size_t M, typename T>
-// void input_aa(z n, z m, arr<N, arr<M, T>> &a)
-// {
-//     ascz(i, n) ascz(j, m) cin >> a[i][j];
-// }
+template <size_t id> struct __bss_array
+{
+    template <size_t max_n, typename kind>
+    constexpr static auto __call(size_t n)
+    {
+        return span(__val<id, max_n, kind>).subspan(0, n);
+    }
+};
 
-// template <typename T> void input_v(vec<T> &v)
-// {
-//     ascz(i, size(v)) cin >> v[i];
-// }
-
-// template <typename T, typename U> void input_vp(vec<pair<T, U>> &v)
-// {
-//     ascz(i, size(v)) cin >> v[i].first >> v[i].second;
-// }
-
-// template <typename T> void input_vv(vec<vec<T>> &v)
-// {
-//     ascz(i, size(v)) ascz(j, size(v[i])) cin >> v[i][j];
-// }
+// #define bss_array __bss_array<__LINE__>::__call
+#define bss_array __bss_array<__COUNTER__>::__call
 
 #pragma endregion
 #pragma region algos
@@ -301,7 +281,7 @@ var mq_er(deque<z> &mq, z x)
 
 #pragma endregion
 
-const z N = -19'06'2025;
+const z N = -25'06'2025;
 
 int main()
 {

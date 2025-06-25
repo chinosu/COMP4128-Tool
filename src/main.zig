@@ -8,13 +8,15 @@ pub fn main() !void {
     assert(args.skip());
     const c = args.next() orelse return log.err("enter a command", .{});
 
-    if (mem.eql(u8, c, "ini")) {
+    if (eql(u8, c, "i") or eql(u8, c, "ini")) {
         const name = args.next() orelse return log.err("you must specify a name", .{});
         try cmd.ini(name);
-    } else if (mem.eql(u8, c, "t") or mem.eql(u8, c, "test")) {
+    } else if (eql(u8, c, "t") or eql(u8, c, "test")) {
         try cmd.tests(alloc);
-    } else if (mem.eql(u8, c, "f") or mem.eql(u8, c, "fuzz")) {
+    } else if (eql(u8, c, "f") or eql(u8, c, "fuzz")) {
         try cmd.fuzz(alloc);
+    } else if (eql(u8, c, "meta")) {
+        @panic("todo");
     } else {
         return log.err("unrecognized command '{s}'", .{c});
     }
@@ -25,7 +27,7 @@ const cmd = @import("cmd.zig");
 const assert = std.debug.assert;
 
 const log = std.log;
-const mem = std.mem;
+const eql = std.mem.eql;
 const process = std.process;
 const heap = std.heap;
 
