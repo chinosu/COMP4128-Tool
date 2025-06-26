@@ -5,62 +5,30 @@ pub fn tests(alloc: mem.Allocator) !void {
     try cxx_main.wait();
     defer cwd.deleteFile(path.main_exe) catch {};
 
-    const test_file = try cwd.openFile(path.tests, .{});
-    defer test_file.close();
-    const test_bytes = try test_file.readToEndAlloc(alloc, 2048);
-    defer alloc.free(test_bytes);
-    log.info("read {d} bytes from test file", .{test_bytes.len});
+    var runs = try find_tests(alloc, path.tests);
+    defer runs.deinit(alloc);
+    defer for (0..runs.items.len) |i| {
+        runs.items[i].in.deinit(alloc);
+        runs.items[i].out.deinit(alloc);
+    };
 
-    var in = try List(List(u8)).initCapacity(alloc, 32);
-    defer in.deinit(alloc);
-    defer for (0..in.items.len) |i| in.items[i].deinit(alloc);
-
-    var exp_out = try List(List(u8)).initCapacity(alloc, 32);
-    defer exp_out.deinit(alloc);
-    defer for (0..exp_out.items.len) |i| exp_out.items[i].deinit(alloc);
-
-    var lines = mem.tokenizeScalar(u8, test_bytes, '\n');
-    while (lines.next()) |_line| {
-        const line = mem.trim(u8, _line, " \t\r\n");
-        if (line.len == 0 or mem.startsWith(u8, line, "#")) continue;
-
-        if (mem.startsWith(u8, line, "| ")) {
-            if (exp_out.items.len == 0 or exp_out.items[exp_out.items.len - 1].items.len != 0) {
-                try in.append(alloc, try List(u8).initCapacity(alloc, 64));
-                try exp_out.append(alloc, try List(u8).initCapacity(alloc, 64));
-            }
-            try in.items[in.items.len - 1].appendSlice(alloc, line[2..]);
-            try in.items[in.items.len - 1].append(alloc, '\n');
-        } else {
-            try exp_out.items[exp_out.items.len - 1].appendSlice(alloc, line);
-            try exp_out.items[exp_out.items.len - 1].append(alloc, '\n');
-        }
-    }
-
-    assert(in.items.len == exp_out.items.len);
-    if (in.items.len != 1) {
-        log.info("found {d} tests", .{in.items.len});
-    } else {
-        log.info("found 1 test", .{});
-    }
-
-    for (0..in.items.len) |i| {
+    for (runs.items, 1..) |run, i| {
         var proc = Child.init(&.{path.main_exe}, alloc);
         proc.stdin_behavior = .Pipe;
         proc.stdout_behavior = .Pipe;
         proc.stderr_behavior = .Pipe;
         try proc.spawn();
-        try proc.stdin.?.writeAll(in.items[i].items);
+        try proc.stdin.?.writeAll(run.in.items);
 
         var poll = io.poll(alloc, enum { out, err }, .{ .out = proc.stdout.?, .err = proc.stderr.? });
         defer poll.deinit();
         while (try poll.poll()) {
             if (poll.fifo(.out).count > 8192) {
-                log.warn("test {d} stopped ({d} bytes from stdout)", .{ i + 1, poll.fifo(.out).count });
+                log.warn("test {d} stopped ({d} bytes from stdout)", .{ i, poll.fifo(.out).count });
                 _ = try proc.kill();
             }
             if (poll.fifo(.err).count > 8192) {
-                log.warn("test {d} stopped ({d} bytes from stderr)", .{ i + 1, poll.fifo(.err).count });
+                log.warn("test {d} stopped ({d} bytes from stderr)", .{ i, poll.fifo(.err).count });
                 _ = try proc.kill();
             }
         }
@@ -68,17 +36,17 @@ pub fn tests(alloc: mem.Allocator) !void {
         const err = poll.fifo(.err).buf[0..poll.fifo(.err).count];
         _ = try proc.wait();
 
-        if (mem.eql(u8, exp_out.items[i].items, out)) {
-            log.info("test {d} pass", .{i + 1});
+        if (mem.eql(u8, run.out.items, out)) {
+            log.info("test {d} pass", .{i});
             continue;
         }
 
-        log.info("test {d} fail", .{i + 1});
-        var in_it = mem.tokenizeScalar(u8, in.items[i].items, '\n');
+        log.info("test {d} fail", .{i});
+        var in_it = mem.tokenizeScalar(u8, run.in.items, '\n');
         while (in_it.next()) |line| log.info(term.italic ++ "  {s}" ++ term.reset, .{line});
 
         var width: usize = 0;
-        var exp_out_it = mem.tokenizeScalar(u8, exp_out.items[i].items, '\n');
+        var exp_out_it = mem.tokenizeScalar(u8, run.out.items, '\n');
         while (exp_out_it.next()) |line| width = @max(width, 4 + line.len);
         exp_out_it.reset();
 
@@ -98,6 +66,46 @@ pub fn tests(alloc: mem.Allocator) !void {
         var err_it = mem.tokenizeScalar(u8, err, '\n');
         while (err_it.next()) |line| log.info("  (err) {s}", .{line});
     }
+}
+
+const Run = struct { in: List(u8), out: List(u8) };
+fn find_tests(alloc: mem.Allocator, test_path: []const u8) !List(Run) {
+    const file = try fs.cwd().openFile(test_path, .{});
+    defer file.close();
+
+    const bytes = try file.readToEndAlloc(alloc, 4096);
+    defer alloc.free(bytes);
+    log.info("read {d} bytes from test file", .{bytes.len});
+
+    var runs = try List(Run).initCapacity(alloc, 32);
+
+    var lines = mem.tokenizeScalar(u8, bytes, '\n');
+    while (lines.next()) |_line| {
+        const line = mem.trim(u8, _line, " \t\r\n");
+        if (line.len == 0 or line[0] == '#') continue;
+
+        if (line[0] == '|') {
+            if (runs.items.len == 0 or runs.items[runs.items.len - 1].out.items.len != 0) {
+                try runs.append(alloc, .{
+                    .in = try List(u8).initCapacity(alloc, 64),
+                    .out = try List(u8).initCapacity(alloc, 64),
+                });
+            }
+            try runs.items[runs.items.len - 1].in.appendSlice(alloc, mem.trimLeft(u8, line[1..], " "));
+            try runs.items[runs.items.len - 1].in.append(alloc, '\n');
+        } else {
+            try runs.items[runs.items.len - 1].out.appendSlice(alloc, line);
+            try runs.items[runs.items.len - 1].out.append(alloc, '\n');
+        }
+    }
+
+    if (runs.items.len != 1) {
+        log.info("find {d} tests", .{runs.items.len});
+    } else {
+        log.info("find 1 test", .{});
+    }
+
+    return runs;
 }
 
 const path = @import("../path.zig");
