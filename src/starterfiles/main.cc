@@ -279,16 +279,69 @@ template <size_t id> struct __global
 #pragma endregion
 #pragma region algos
 
-var mq_in(deque<z> &mq, z x)
+struct dsu
 {
-    while (size(mq) && mq.back() > x) mq.pop_back();
-    mq.push_back(x);
-}
+    z  n;
+    z *parent;
+    z *rank;
 
-var mq_er(deque<z> &mq, z x)
+    dsu(z n) : n(n)
+    {
+        parent               = static_cast<z *>(malloc(sizeof(z) * n));
+        ascz(i, n) parent[i] = i;
+        rank                 = static_cast<z *>(malloc(sizeof(z) * n));
+        fill(rank, rank + n, 1);
+    }
+
+    ~dsu()
+    {
+        free(parent);
+        free(rank);
+    }
+
+    inline z find(z i)
+    {
+        while (parent[i] != i) i = parent[i] = parent[parent[i]];
+        return i;
+    }
+
+    inline bool unite(z i, z j)
+    {
+        z pi = find(i);
+        z pj = find(j);
+        if (pi == pj) return false;
+        if (rank[pi] < rank[pj]) swap(pi, pj);
+        parent[pj]  = pi;
+        rank[pi]   += pj;
+        return true;
+    }
+
+    inline bool same(z i, z j)
+    {
+        return find(i) == find(j);
+    }
+
+    inline int size(z i)
+    {
+        return rank[find(i)];
+    }
+};
+
+struct minque
 {
-    if (size(mq) && mq.front() == x) mq.pop_front();
-}
+    deque<z> q;
+
+    inline void add(z item)
+    {
+        while (q SIZE and q BACK > item) q.pop_back();
+        q.push_back(item);
+    }
+
+    inline void remove(z item)
+    {
+        if (q SIZE and q FRONT == item) q.pop_front();
+    }
+};
 
 #pragma endregion
 
