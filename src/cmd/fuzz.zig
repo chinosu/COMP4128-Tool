@@ -3,29 +3,14 @@ pub fn fuzz(alloc: mem.Allocator) !void {
 
     var main_cxx = try cxx.spawn(alloc, path.main_src, path.main_exe, .fast);
     var slow_cxx = try cxx.spawn(alloc, path.slow_src, path.slow_exe, .fast);
+    var gen_ziglib = try ziglib.spawn(alloc, path.gen);
     try main_cxx.wait();
     defer cwd.deleteFile(path.main_exe) catch {};
     try slow_cxx.wait();
     defer cwd.deleteFile(path.slow_exe) catch {};
-
-    var zig = Child.init(&.{ "zig", "build-lib", path.gen, "-dynamic" }, alloc);
-    zig.stdin_behavior = .Close;
-    zig.stdout_behavior = .Close;
-    zig.stderr_behavior = .Pipe;
-
-    try zig.spawn();
-    const zig_err = try zig.stderr.?.readToEndAlloc(alloc, 1024);
-    defer alloc.free(zig_err);
-
-    if (zig_err.len != 0) {
-        var lines = mem.tokenizeScalar(u8, zig_err, '\n');
-        while (lines.next()) |line| log.warn("(zig) {s}", .{line});
-    }
-
-    switch ((try zig.wait()).Exited) {
-        0 => log.info("compile success {s}", .{path.gen}),
-        else => |c| return log.err("compile exit {d} for {s}", .{ c, path.gen }),
-    }
+    try gen_ziglib.wait();
+    defer cwd.deleteFile(path.genlib) catch {};
+    defer cwd.deleteFile(path.genlibobject) catch {};
 
     const gen_t = *const fn (*Random, *MList(u8)) bool;
     var gen_lib = try DynLib.open(path.genlib);
@@ -67,6 +52,7 @@ pub fn fuzz(alloc: mem.Allocator) !void {
 }
 
 const cxx = @import("../cxx.zig");
+const ziglib = @import("../ziglib.zig");
 const path = @import("../path.zig");
 
 const List = @import("std").ArrayListUnmanaged;

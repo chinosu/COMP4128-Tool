@@ -1,5 +1,3 @@
-const Self = @This();
-
 alloc: mem.Allocator,
 compiler: Child,
 src: []const u8,
@@ -58,6 +56,8 @@ pub fn wait(self: *Self) !void {
         },
     }
 }
+
+const Self = @This();
 
 const Child = @import("std").process.Child;
 const log = @import("std").log;

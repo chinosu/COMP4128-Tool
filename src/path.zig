@@ -3,6 +3,7 @@ pub const main_exe = "./exe_main";
 pub const tests = "./tests.txt";
 pub const gen = "./gen.zig";
 pub const genlib = "libgen.dylib";
+pub const genlibobject = genlib ++ ".o";
 pub const slow_src = "./slow.cc";
 pub const slow_exe = "./exe_slow";
 // pub const vscode_dir = "./.vscode";
