@@ -17,9 +17,13 @@ pub fn main() !void {
         try fuzz(alloc);
     } else if (eql(u8, c, "meta")) {
         @panic("todo");
+    } else if (eql(u8, c, "c") or eql(u8, c, "code")) {
+        _ = try run(.{
+            .allocator = alloc,
+            .argv = &.{ "code", path.main_src, path.tests },
+            .expand_arg0 = .expand,
+        });
     } else {
-        const cxx = @import("cxx.zig");
-        _ = try cxx.spawn(alloc, "a", "b", .debug);
         return log.err("unrecognized command '{s}'", .{c});
     }
 }
@@ -27,13 +31,14 @@ pub fn main() !void {
 const ini = @import("cmd/ini.zig").ini;
 const tests = @import("cmd/tests.zig").tests;
 const fuzz = @import("cmd/fuzz.zig").fuzz;
+const path = @import("path.zig");
 
-const assert = std.debug.assert;
+const assert = @import("std").debug.assert;
+const run = @import("std").process.Child.run;
 
-const log = std.log;
-const eql = std.mem.eql;
-const process = std.process;
-const heap = std.heap;
+const log = @import("std").log;
+const eql = @import("std").mem.eql;
+const process = @import("std").process;
+const heap = @import("std").heap;
 
-const std = @import("std");
 const builtin = @import("builtin");
