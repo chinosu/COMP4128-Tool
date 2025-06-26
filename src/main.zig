@@ -10,11 +10,11 @@ pub fn main() !void {
 
     if (eql(u8, c, "i") or eql(u8, c, "ini")) {
         const name = args.next() orelse return log.err("you must specify a name", .{});
-        try cmd.ini(name);
+        try ini(name);
     } else if (eql(u8, c, "t") or eql(u8, c, "test")) {
-        try cmd.tests(alloc);
+        try tests(alloc);
     } else if (eql(u8, c, "f") or eql(u8, c, "fuzz")) {
-        try cmd.fuzz(alloc);
+        try fuzz(alloc);
     } else if (eql(u8, c, "meta")) {
         @panic("todo");
     } else {
@@ -22,7 +22,9 @@ pub fn main() !void {
     }
 }
 
-const cmd = @import("cmd.zig");
+const ini = @import("cmd/ini.zig").ini;
+const tests = @import("cmd/tests.zig").tests;
+const fuzz = @import("cmd/fuzz.zig").fuzz;
 
 const assert = std.debug.assert;
 
