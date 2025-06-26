@@ -8,9 +8,9 @@ pub fn ini(name: []const u8) !void {
     var subdir = try dir.openDir(name, .{});
     defer subdir.close();
 
-    _ = subdir.statFile(path.src) catch |e| switch (e) {
+    _ = subdir.statFile(path.main_src) catch |e| switch (e) {
         error.FileNotFound => {
-            const f = try subdir.createFile(path.src, .{});
+            const f = try subdir.createFile(path.main_src, .{});
             defer f.close();
             try f.writeAll(@embedFile("../starterfiles/main.cc"));
         },

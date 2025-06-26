@@ -1,10 +1,10 @@
-pub const src = "./main.cc";
-pub const exe = "./main";
+pub const main_src = "./main.cc";
+pub const main_exe = "./exe_main";
 pub const tests = "./tests.txt";
 pub const gen = "./gen.zig";
 pub const genlib = "libgen.dylib";
 pub const slow_src = "./slow.cc";
-pub const slow_exe = "./slow";
-pub const vscode_dir = "./.vscode";
-pub const c_cpp_properties = "./c_cpp_properties.json";
-pub const clang_format = "./.clang_format";
+pub const slow_exe = "./exe_slow";
+// pub const vscode_dir = "./.vscode";
+// pub const c_cpp_properties = "./c_cpp_properties.json";
+// pub const clang_format = "./.clang_format";

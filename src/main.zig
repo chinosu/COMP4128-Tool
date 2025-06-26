@@ -18,6 +18,8 @@ pub fn main() !void {
     } else if (eql(u8, c, "meta")) {
         @panic("todo");
     } else {
+        const cxx = @import("cxx.zig");
+        _ = try cxx.spawn(alloc, "a", "b", .debug);
         return log.err("unrecognized command '{s}'", .{c});
     }
 }

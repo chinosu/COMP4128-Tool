@@ -1,7 +1,10 @@
 pub fn tests(alloc: mem.Allocator) !void {
-    if (!try cxx_compile(alloc, path.src, path.exe, .slow)) return;
-
     const cwd = fs.cwd();
+
+    var cxx_main = try cxx.spawn(alloc, path.main_src, path.main_exe, .debug);
+    try cxx_main.wait();
+    defer cwd.deleteFile(path.main_exe) catch {};
+
     const test_file = try cwd.openFile(path.tests, .{});
     defer test_file.close();
     const test_bytes = try test_file.readToEndAlloc(alloc, 2048);
@@ -42,7 +45,7 @@ pub fn tests(alloc: mem.Allocator) !void {
     }
 
     for (0..in.items.len) |i| {
-        var proc = Child.init(&.{path.exe}, alloc);
+        var proc = Child.init(&.{path.main_exe}, alloc);
         proc.stdin_behavior = .Pipe;
         proc.stdout_behavior = .Pipe;
         proc.stderr_behavior = .Pipe;
@@ -99,7 +102,7 @@ pub fn tests(alloc: mem.Allocator) !void {
 
 const path = @import("../path.zig");
 const term = @import("../term.zig");
-const cxx_compile = @import("../common.zig").cxx_compile;
+const cxx = @import("../cxx.zig");
 
 const List = @import("std").ArrayListUnmanaged;
 const assert = @import("std").debug.assert;

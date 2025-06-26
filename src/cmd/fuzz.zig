@@ -1,6 +1,12 @@
 pub fn fuzz(alloc: mem.Allocator) !void {
-    if (!try cxx_compile(alloc, path.src, path.exe, .fast)) return;
-    if (!try cxx_compile(alloc, path.slow_src, path.slow_exe, .fast)) return;
+    const cwd = fs.cwd();
+
+    var main_cxx = try cxx.spawn(alloc, path.main_src, path.main_exe, .fast);
+    var slow_cxx = try cxx.spawn(alloc, path.slow_src, path.slow_exe, .fast);
+    try main_cxx.wait();
+    defer cwd.deleteFile(path.main_exe) catch {};
+    try slow_cxx.wait();
+    defer cwd.deleteFile(path.slow_exe) catch {};
 
     var zig = Child.init(&.{ "zig", "build-lib", path.gen, "-dynamic" }, alloc);
     zig.stdin_behavior = .Close;
@@ -33,7 +39,7 @@ pub fn fuzz(alloc: mem.Allocator) !void {
     if (!gen(&random, &in)) return log.err("gen fail", .{});
     log.info("generate {d} bytes", .{in.items.len});
 
-    var proc = Child.init(&.{path.exe}, alloc);
+    var proc = Child.init(&.{path.main_exe}, alloc);
     proc.stdin_behavior = .Pipe;
     proc.stdout_behavior = .Pipe;
     proc.stderr_behavior = .Pipe;
@@ -60,13 +66,14 @@ pub fn fuzz(alloc: mem.Allocator) !void {
     _ = try slow_proc.wait();
 }
 
-const cxx_compile = @import("../common.zig").cxx_compile;
+const cxx = @import("../cxx.zig");
 const path = @import("../path.zig");
 
 const List = @import("std").ArrayListUnmanaged;
 const MList = @import("std").ArrayList;
 const Child = @import("std").process.Child;
 const log = @import("std").log;
+const fs = @import("std").fs;
 const mem = @import("std").mem;
 const time = @import("std").time;
 const DynLib = @import("std").DynLib;
