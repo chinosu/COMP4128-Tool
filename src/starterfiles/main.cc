@@ -23,12 +23,12 @@ const z    inf                               = numeric_limits<z>::max();
 const auto gtz                               = greater<z>();
 using pz                                     = pair<z, z>;
 
-template <typename T> using vec              = vector<T>;
+template <typename kind> using vec           = vector<kind>;
 using vz                                     = vec<z>;
 using vpz                                    = vec<pz>;
 using vvz                                    = vec<vz>;
 
-template <typename T> using mset             = multiset<T>;
+template <typename kind> using mset          = multiset<kind>;
 
 template <size_t n, typename kind> using arr = array<kind, n>;
 
@@ -264,48 +264,36 @@ template <typename Head, typename... Tail> void _p(const Head &H, const Tail &..
 #endif
 
 #pragma endregion
-#pragma region                          eternal/global
+#pragma region bss
 
-template <size_t _, typename kind> kind __globalval;
+template <size_t _, typename kind> kind _bssval;
 
-template <size_t id> struct __global
+template <size_t id> struct _bss
 {
-    template <size_t max_n, typename kind> consteval static auto __arr(size_t n = max_n)
-    {
-        return span(__globalval<id, arr<max_n, kind>>).subspan(0, n);
-    }
+    template <typename kind> inline static kind &_ref = _bssval<id, kind>;
 
-    // template <typename kind>
-    // static kind &__ref()
-    // {
-    //     return __globalval<id, kind>;
-    // }
+    template <size_t max_n, typename kind> consteval static auto _arr(size_t n = max_n)
+    {
+        return span(_bssval<id, arr<max_n, kind>>).subspan(0, n);
+    }
 };
 
-#define bss_arr __global<__COUNTER__>::__arr // or __LINE__?
-// #define eternal __global<__COUNTER__>::__ref
+#define bss_arr _bss<__COUNTER__>::_arr // or __LINE__?
+#define bss     _bss<__COUNTER__>::_ref
 
 #pragma endregion
 #pragma region algos
 
-struct dsu
+template <size_t max_n> struct dsu
 {
-    z  n;
-    z *parent;
-    z *rank;
+    z             n;
+    arr<max_n, z> parent;
+    arr<max_n, z> rank;
 
-    dsu(z n) : n(n)
+    inline void ini(z n)
     {
-        parent               = static_cast<z *>(malloc(sizeof(z) * n));
-        rank                 = static_cast<z *>(malloc(sizeof(z) * n));
-        ascz(i, n) parent[i] = i;
-        fill(rank, rank + n, 1);
-    }
-
-    ~dsu()
-    {
-        free(parent);
-        free(rank);
+        iota(all(parent), 0);
+        fill(all(rank), 1);
     }
 
     inline z find(z i)
@@ -359,7 +347,7 @@ template <size_t max_n> struct coord_compress
     arr<max_n, z> _small;
     span<z>       small;
 
-    coord_compress(span<z> items)
+    inline pair<span<z>, span<z>> press(span<z> items)
     {
         origin = view(_origin.data(), items.SIZE);
         small  = view(_small, items.SIZE);
@@ -367,11 +355,23 @@ template <size_t max_n> struct coord_compress
         sort(all(origin));
         origin                       = view(origin, unique(all(origin)) - origin.BEGIN);
         ascz(i, items.SIZE) small[i] = lower_bound(all(origin), items[i]) - origin.BEGIN;
+        return make_pair(small, origin);
+    }
+};
+
+struct range_tree
+{
+    z  n;
+    z *oak;
+
+    range_tree() : n(n)
+    {
+        oak = static_cast<z *>(malloc(sizeof(z) * 4 * n));
     }
 
-    inline pair<span<z>, span<z>> get()
+    ~range_tree()
     {
-        return make_pair(small, origin);
+        free(oak);
     }
 };
 
@@ -381,4 +381,12 @@ int main()
 {
     ALL YOUR CONTESTS ARE BELONG TO US;
     print("‧₊˚ ⋅");
+
+    ref mq = bss<minque>;
+    mq.add(5);
+    mq.add(11);
+    mq.add(20);
+    print(mq.q);
+    mq.remove(5);
+    print(mq.q);
 }
