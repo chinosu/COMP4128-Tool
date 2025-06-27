@@ -256,9 +256,10 @@ template <typename Head, typename... Tail> void _p(const Head &H, const Tail &..
 }
 
 #define print(...)                                                                                                     \
-    cerr << "" << __LINE__ << " => [" << #__VA_ARGS__ << "] = [";                                                      \
-    _p(__VA_ARGS__);
-
+    do {                                                                                                               \
+        cerr << "" << __LINE__ << " => [" << #__VA_ARGS__ << "] = [";                                                  \
+        _p(__VA_ARGS__);                                                                                               \
+    } while (0)
 #else
 #define print(...)
 #endif
