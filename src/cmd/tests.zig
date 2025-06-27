@@ -1,8 +1,8 @@
 pub fn tests(alloc: mem.Allocator) !void {
     const cwd = fs.cwd();
 
-    var cxx_main = try cxx.spawn(alloc, path.main_src, path.main_exe, .debug);
-    try cxx_main.wait();
+    var cxx_child = try cxx.spawn(alloc, path.main_src, path.main_exe, .debug);
+    try cxx.wait(alloc, &cxx_child, path.main_src);
     defer cwd.deleteFile(path.main_exe) catch {};
 
     var runs = try find_tests(alloc, path.tests);
@@ -13,28 +13,10 @@ pub fn tests(alloc: mem.Allocator) !void {
     };
 
     for (runs.items, 1..) |run, i| {
-        var proc = Child.init(&.{path.main_exe}, alloc);
-        proc.stdin_behavior = .Pipe;
-        proc.stdout_behavior = .Pipe;
-        proc.stderr_behavior = .Pipe;
-        try proc.spawn();
-        try proc.stdin.?.writeAll(run.in.items);
-
-        var poll = io.poll(alloc, enum { out, err }, .{ .out = proc.stdout.?, .err = proc.stderr.? });
-        defer poll.deinit();
-        while (try poll.poll()) {
-            if (poll.fifo(.out).count > 8192) {
-                log.warn("test {d} stopped ({d} bytes from stdout)", .{ i, poll.fifo(.out).count });
-                _ = try proc.kill();
-            }
-            if (poll.fifo(.err).count > 8192) {
-                log.warn("test {d} stopped ({d} bytes from stderr)", .{ i, poll.fifo(.err).count });
-                _ = try proc.kill();
-            }
-        }
-        const out = poll.fifo(.out).buf[0..poll.fifo(.out).count];
-        const err = poll.fifo(.err).buf[0..poll.fifo(.err).count];
-        _ = try proc.wait();
+        var child = try target.spawn(alloc, path.main_exe, run.in.items);
+        const out, const err = try target.wait(alloc, &child);
+        defer alloc.free(out);
+        defer alloc.free(err);
 
         if (mem.eql(u8, run.out.items, out)) {
             log.info("test {d} pass", .{i});
@@ -111,6 +93,7 @@ fn find_tests(alloc: mem.Allocator, test_path: []const u8) !List(Run) {
 const path = @import("../path.zig");
 const term = @import("../term.zig");
 const cxx = @import("../cxx.zig");
+const target = @import("../target.zig");
 
 const List = @import("std").ArrayListUnmanaged;
 const assert = @import("std").debug.assert;

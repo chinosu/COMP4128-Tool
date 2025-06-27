@@ -17,81 +17,88 @@ using namespace __gnu_pbds;
 #pragma endregion
 #pragma region types
 
-using str                                    = string;
-using z                                      = long long;
-const z    inf                               = numeric_limits<z>::max();
-const auto gtz                               = greater<z>();
-using pz                                     = pair<z, z>;
+using str = string;
+using z = long long;
+const z inf = numeric_limits<z>::max();
+const auto gtz = greater<z>();
+using pz = pair<z, z>;
 
-template <typename kind> using vec           = vector<kind>;
-using vz                                     = vec<z>;
-using vpz                                    = vec<pz>;
-using vvz                                    = vec<vz>;
+template <typename kind>
+using vec = vector<kind>;
+using vz = vec<z>;
+using vpz = vec<pz>;
+using vvz = vec<vz>;
 
-template <typename kind> using mset          = multiset<kind>;
+template <typename kind>
+using mset = multiset<kind>;
 
-template <size_t n, typename kind> using arr = array<kind, n>;
+template <size_t n, typename kind>
+using arr = array<kind, n>;
 
-using statset  = tree<z, null_type, less<z>, rb_tree_tag, tree_order_statistics_node_update>;
+using statset = tree<z, null_type, less<z>, rb_tree_tag, tree_order_statistics_node_update>;
 using statmset = tree<pz, null_type, less<pz>, rb_tree_tag, tree_order_statistics_node_update>;
 
 #pragma endregion
 #pragma region macros
 
-#define var                 auto
-#define ref                 auto &
+#define var auto
+#define ref auto &
 
-#define all(x)              x.begin(), x.end()
-#define ascz(i, stop)       for (z i = 0; i < stop; i += 1)
+#define all(x) x.begin(), x.end()
+#define ascz(i, stop) for (z i = 0; i < stop; i += 1)
 #define asc(i, start, stop) for (z i = start; i < stop; i += 1)
 #define dsc(i, start, stop) for (z i = start; i > stop; i -= 1)
-#define forch(item, items)  for (ref item : items)
-#define ifnot(cond)         if (!(cond))
-#define elif                else if
-#define imin(a, b)          a = min(a, b);
-#define imax(a, b)          a = max(a, b);
-#define iamod(a, b, m)      a = (a + b) % m
+#define forch(item, items) for (ref item : items)
+#define ifnot(cond) if (!(cond))
+#define elif else if
+#define imin(a, b) a = min(a, b);
+#define imax(a, b) a = max(a, b);
+#define iamod(a, b, m) a = (a + b) % m
 
-#define SIZE                size()
-#define BEGIN               begin()
-#define END                 end()
-#define REND                rend()
-#define RBEGIN              rbegin()
-#define FRONT               front()
-#define BACK                back()
-#define DATA                data()
+#define SIZE size()
+#define BEGIN begin()
+#define END end()
+#define REND rend()
+#define RBEGIN rbegin()
+#define FRONT front()
+#define BACK back()
+#define DATA data()
 
-#define out                 cout <<
-#define err                 cerr <<
-#define nl                  << '\n';
+#define out cout <<
+#define err cerr <<
+#define nl << '\n';
 
-#define ALL                 cin.tie
-#define YOUR                (nullptr)
-#define CONTESTS            ;
-#define ARE                 cin.sync_with_stdio
-#define BELONG              (false);
-#define TO                  cout << fixed << setprecision(9)
-#define US                  ;
+#define ALL cin.tie
+#define YOUR (nullptr)
+#define CONTESTS ;
+#define ARE cin.sync_with_stdio
+#define BELONG (false);
+#define TO cout << fixed << setprecision(9)
+#define US ;
 
 #pragma endregion
 #pragma region functions
 
-template <typename... T> inline void in(T &...a)
+template <typename... T>
+inline void in(T &...a)
 {
     ((cin >> a), ...);
 }
 
-template <size_t max_n, typename kind> inline span<kind> view(z n, arr<max_n, kind> &items)
+template <size_t max_n, typename kind>
+inline span<kind> view(z n, arr<max_n, kind> &items)
 {
     return span(items).subspan(0, n);
 }
 
-template <typename kind> inline span<kind> view(z n, span<kind> &items)
+template <typename kind>
+inline span<kind> view(z n, span<kind> &items)
 {
     return items.subspan(0, n);
 }
 
-template <typename kind> inline span<kind> view(z n, kind *items)
+template <typename kind>
+inline span<kind> view(z n, kind *items)
 {
     return span(items, n);
 }
@@ -165,15 +172,23 @@ void __p(bool x)
     cerr << (x ? "true" : "false");
 }
 
-template <typename A> void __p(const A &x);
-template <typename A, typename B> void __p(const pair<A, B> &p);
-template <typename... A> void __p(const tuple<A...> &t);
-template <typename T> void __p(stack<T> s);
-template <typename T> void __p(queue<T> q);
-template <typename T, typename... U> void __p(priority_queue<T, U...> q);
-template <size_t N> void __p(bitset<N> q);
+template <typename A>
+void __p(const A &x);
+template <typename A, typename B>
+void __p(const pair<A, B> &p);
+template <typename... A>
+void __p(const tuple<A...> &t);
+template <typename T>
+void __p(stack<T> s);
+template <typename T>
+void __p(queue<T> q);
+template <typename T, typename... U>
+void __p(priority_queue<T, U...> q);
+template <size_t N>
+void __p(bitset<N> q);
 
-template <typename A> void __p(const A &x)
+template <typename A>
+void __p(const A &x)
 {
     var first = true;
     cerr << '[';
@@ -185,7 +200,8 @@ template <typename A> void __p(const A &x)
     cerr << ']';
 }
 
-template <typename A, typename B> void __p(const pair<A, B> &p)
+template <typename A, typename B>
+void __p(const pair<A, B> &p)
 {
     cerr << '(';
     __p(p.first);
@@ -194,15 +210,18 @@ template <typename A, typename B> void __p(const pair<A, B> &p)
     cerr << ')';
 }
 
-template <typename... A> void __p(const tuple<A...> &t)
+template <typename... A>
+void __p(const tuple<A...> &t)
 {
     var first = true;
     cerr << '(';
-    apply([&first](const auto &...args) { ((cerr << (first ? "" : ","), __p(args), first = false), ...); }, t);
+    apply([&first](const auto &...args)
+          { ((cerr << (first ? "" : ","), __p(args), first = false), ...); }, t);
     cerr << ')';
 }
 
-template <typename T> void __p(stack<T> s)
+template <typename T>
+void __p(stack<T> s)
 {
     vec<T> v;
     while (!s.empty())
@@ -215,7 +234,8 @@ template <typename T> void __p(stack<T> s)
     __p(v);
 }
 
-template <typename T> void __p(queue<T> q)
+template <typename T>
+void __p(queue<T> q)
 {
     vec<T> v;
     while (!q.empty())
@@ -227,7 +247,8 @@ template <typename T> void __p(queue<T> q)
     __p(v);
 }
 
-template <typename T, typename... U> void __p(priority_queue<T, U...> q)
+template <typename T, typename... U>
+void __p(priority_queue<T, U...> q)
 {
     vec<T> v;
     while (!q.empty())
@@ -239,7 +260,8 @@ template <typename T, typename... U> void __p(priority_queue<T, U...> q)
     __p(v);
 }
 
-template <size_t N> void __p(bitset<N> q)
+template <size_t N>
+void __p(bitset<N> q)
 {
     cerr << q;
 }
@@ -249,17 +271,20 @@ void _p()
     cerr << "]\n";
 }
 
-template <typename Head, typename... Tail> void _p(const Head &H, const Tail &...T)
+template <typename Head, typename... Tail>
+void _p(const Head &H, const Tail &...T)
 {
     __p(H);
-    if (sizeof...(T)) cerr << ", ";
+    if (sizeof...(T))
+        cerr << ", ";
     _p(T...);
 }
 
-#define print(...)                                                                                                     \
-    do {                                                                                                               \
-        cerr << "" << __LINE__ << " => [" << #__VA_ARGS__ << "] = [";                                                  \
-        _p(__VA_ARGS__);                                                                                               \
+#define print(...)                                                    \
+    do                                                                \
+    {                                                                 \
+        cerr << "" << __LINE__ << " => [" << #__VA_ARGS__ << "] = ["; \
+        _p(__VA_ARGS__);                                              \
     } while (0)
 #else
 #define print(...)
@@ -268,27 +293,32 @@ template <typename Head, typename... Tail> void _p(const Head &H, const Tail &..
 #pragma endregion
 #pragma region bss
 
-template <size_t _, typename kind> kind _bssval;
+template <size_t _, typename kind>
+kind _bssval;
 
-template <size_t id> struct _bss
+template <size_t id>
+struct _bss
 {
-    template <typename kind> inline static kind &_ref = _bssval<id, kind>;
+    template <typename kind>
+    inline static kind &_ref = _bssval<id, kind>;
 
-    template <size_t max_n, typename kind> consteval static auto _arr(size_t n = max_n)
+    template <size_t max_n, typename kind>
+    consteval static auto _arr(size_t n = max_n)
     {
         return span(_bssval<id, arr<max_n, kind>>).subspan(0, n);
     }
 };
 
 #define bss_arr _bss<__COUNTER__>::_arr // or __LINE__?
-#define bss     _bss<__COUNTER__>::_ref
+#define bss _bss<__COUNTER__>::_ref
 
 #pragma endregion
 #pragma region algos
 
-template <size_t max_n> struct dsu
+template <size_t max_n>
+struct dsu
 {
-    z             n;
+    z n;
     arr<max_n, z> parent;
     arr<max_n, z> rank;
 
@@ -300,7 +330,8 @@ template <size_t max_n> struct dsu
 
     inline z find(z i)
     {
-        while (parent[i] != i) i = parent[i] = parent[parent[i]];
+        while (parent[i] != i)
+            i = parent[i] = parent[parent[i]];
         return i;
     }
 
@@ -308,10 +339,12 @@ template <size_t max_n> struct dsu
     {
         z pi = find(i);
         z pj = find(j);
-        if (pi == pj) return false;
-        if (rank[pi] < rank[pj]) swap(pi, pj);
-        parent[pj]  = pi;
-        rank[pi]   += pj;
+        if (pi == pj)
+            return false;
+        if (rank[pi] < rank[pj])
+            swap(pi, pj);
+        parent[pj] = pi;
+        rank[pi] += pj;
         return true;
     }
 
@@ -332,30 +365,33 @@ struct minque
 
     inline void add(z item)
     {
-        while (q.SIZE and q.BACK > item) q.pop_back();
+        while (q.SIZE and q.BACK > item)
+            q.pop_back();
         q.push_back(item);
     }
 
     inline void remove(z item)
     {
-        if (q.SIZE and q.FRONT == item) q.pop_front();
+        if (q.SIZE and q.FRONT == item)
+            q.pop_front();
     }
 };
 
-template <size_t max_n> struct coord_compress
+template <size_t max_n>
+struct coord_compress
 {
     arr<max_n, z> _origin;
-    span<z>       origin;
+    span<z> origin;
     arr<max_n, z> _small;
-    span<z>       small;
+    span<z> small;
 
     inline pair<span<z>, span<z>> press(span<z> items)
     {
         origin = view(items.SIZE, _origin.DATA);
-        small  = view(items.SIZE, _small);
+        small = view(items.SIZE, _small);
         copy(all(items), origin.BEGIN);
         sort(all(origin));
-        origin                       = view(unique(all(origin)) - origin.BEGIN, origin);
+        origin = view(unique(all(origin)) - origin.BEGIN, origin);
         ascz(i, items.SIZE) small[i] = lower_bound(all(origin), items[i]) - origin.BEGIN;
         return make_pair(small, origin);
     }
@@ -363,18 +399,8 @@ template <size_t max_n> struct coord_compress
 
 struct range_tree
 {
-    z  n;
+    z n;
     z *oak;
-
-    range_tree() : n(n)
-    {
-        oak = static_cast<z *>(malloc(sizeof(z) * 4 * n));
-    }
-
-    ~range_tree()
-    {
-        free(oak);
-    }
 };
 
 #pragma endregion
@@ -391,4 +417,6 @@ int main()
     print(mq.q);
     mq.remove(5);
     print(mq.q);
+
+    out "??" nl;
 }
