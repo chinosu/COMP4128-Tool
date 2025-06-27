@@ -32,10 +32,8 @@ template <typename T> using mset             = multiset<T>;
 
 template <size_t n, typename kind> using arr = array<kind, n>;
 
-using statset =
-    tree<z, null_type, less<z>, rb_tree_tag, tree_order_statistics_node_update>;
-using statmset = tree<pz, null_type, less<pz>, rb_tree_tag,
-                      tree_order_statistics_node_update>;
+using statset  = tree<z, null_type, less<z>, rb_tree_tag, tree_order_statistics_node_update>;
+using statmset = tree<pz, null_type, less<pz>, rb_tree_tag, tree_order_statistics_node_update>;
 
 #pragma endregion
 #pragma region macros
@@ -54,13 +52,13 @@ using statmset = tree<pz, null_type, less<pz>, rb_tree_tag,
 #define imax(a, b)          a = max(a, b);
 #define iamod(a, b, m)      a = (a + b) % m
 
-#define SIZE                .size()
-#define BEGIN               .begin()
-#define END                 .end()
-#define REND                .rend()
-#define RBEGIN              .rbegin()
-#define FRONT               .front()
-#define BACK                .back()
+#define SIZE                size()
+#define BEGIN               begin()
+#define END                 end()
+#define REND                rend()
+#define RBEGIN              rbegin()
+#define FRONT               front()
+#define BACK                back()
 
 #define out                 cout <<
 #define err                 cerr <<
@@ -73,6 +71,29 @@ using statmset = tree<pz, null_type, less<pz>, rb_tree_tag,
 #define BELONG              (false);
 #define TO                  cout << fixed << setprecision(9)
 #define US                  ;
+
+#pragma endregion
+#pragma region functions
+
+template <typename... T> inline void in(T &...a)
+{
+    ((cin >> a), ...);
+}
+
+template <size_t max_n, typename kind> inline span<kind> view(arr<max_n, kind> &items, z n)
+{
+    return span(items).subspan(0, n);
+}
+
+template <typename kind> inline span<kind> view(span<kind> &items, z n)
+{
+    return items.subspan(0, n);
+}
+
+template <typename kind> inline span<kind> view(kind *items, z n)
+{
+    return span(items, n);
+}
 
 #pragma endregion
 #pragma region debugprint
@@ -176,9 +197,7 @@ template <typename... A> void __p(const tuple<A...> &t)
 {
     var first = true;
     cerr << '(';
-    apply([&first](const auto &...args)
-          { ((cerr << (first ? "" : ","), __p(args), first = false), ...); },
-          t);
+    apply([&first](const auto &...args) { ((cerr << (first ? "" : ","), __p(args), first = false), ...); }, t);
     cerr << ')';
 }
 
@@ -229,29 +248,20 @@ void _p()
     cerr << "]\n";
 }
 
-template <typename Head, typename... Tail>
-void _p(const Head &H, const Tail &...T)
+template <typename Head, typename... Tail> void _p(const Head &H, const Tail &...T)
 {
     __p(H);
     if (sizeof...(T)) cerr << ", ";
     _p(T...);
 }
 
-#define print(...)                                                             \
-    cerr << "" << __LINE__ << " => [" << #__VA_ARGS__ << "] = [";              \
+#define print(...)                                                                                                     \
+    cerr << "" << __LINE__ << " => [" << #__VA_ARGS__ << "] = [";                                                      \
     _p(__VA_ARGS__);
 
 #else
 #define print(...)
 #endif
-
-#pragma endregion
-#pragma region io
-
-template <typename... T> void in(T &...a)
-{
-    ((cin >> a), ...);
-}
 
 #pragma endregion
 #pragma region                          eternal/global
@@ -260,8 +270,7 @@ template <size_t _, typename kind> kind __globalval;
 
 template <size_t id> struct __global
 {
-    template <size_t max_n, typename kind>
-    consteval static auto __arr(size_t n = max_n)
+    template <size_t max_n, typename kind> consteval static auto __arr(size_t n = max_n)
     {
         return span(__globalval<id, arr<max_n, kind>>).subspan(0, n);
     }
@@ -288,8 +297,8 @@ struct dsu
     dsu(z n) : n(n)
     {
         parent               = static_cast<z *>(malloc(sizeof(z) * n));
-        ascz(i, n) parent[i] = i;
         rank                 = static_cast<z *>(malloc(sizeof(z) * n));
+        ascz(i, n) parent[i] = i;
         fill(rank, rank + n, 1);
     }
 
@@ -333,13 +342,36 @@ struct minque
 
     inline void add(z item)
     {
-        while (q SIZE and q BACK > item) q.pop_back();
+        while (q.SIZE and q.BACK > item) q.pop_back();
         q.push_back(item);
     }
 
     inline void remove(z item)
     {
-        if (q SIZE and q FRONT == item) q.pop_front();
+        if (q.SIZE and q.FRONT == item) q.pop_front();
+    }
+};
+
+template <size_t max_n> struct coord_compress
+{
+    arr<max_n, z> _origin;
+    span<z>       origin;
+    arr<max_n, z> _small;
+    span<z>       small;
+
+    coord_compress(span<z> items)
+    {
+        origin = view(_origin.data(), items.SIZE);
+        small  = view(_small, items.SIZE);
+        copy(all(items), origin.BEGIN);
+        sort(all(origin));
+        origin                       = view(origin, unique(all(origin)) - origin.BEGIN);
+        ascz(i, items.SIZE) small[i] = lower_bound(all(origin), items[i]) - origin.BEGIN;
+    }
+
+    inline pair<span<z>, span<z>> get()
+    {
+        return make_pair(small, origin);
     }
 };
 
