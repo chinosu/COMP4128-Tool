@@ -101,6 +101,11 @@ template <typename kind> inline constexpr kind pick(bool cond, kind a, kind b)
     return cond ? a : b;
 }
 
+template <typename kind> inline constexpr bool inrange(kind left, kind mid, kind right)
+{
+    return left <= mid and mid < right;
+}
+
 #pragma endregion
 #pragma region debugprint
 
