@@ -42,8 +42,9 @@ using statmset = tree<pz, null_type, less<pz>, rb_tree_tag, tree_order_statistic
 #define ref                 auto &
 
 #define all(x)              x.begin(), x.end()
-#define ascz(i, stop)       for (z i = 0; i < stop; i += 1)
 #define asc(i, start, stop) for (z i = start; i < stop; i += 1)
+#define ascz(i, stop)       for (z i = 0; i < stop; i += 1)
+#define asc1(i, stop)       for (z i = 1; i <= stop; i += 1)
 #define dsc(i, start, stop) for (z i = start; i > stop; i -= 1)
 #define forch(item, items)  for (ref item : items)
 #define ifnot(cond)         if (!(cond))
