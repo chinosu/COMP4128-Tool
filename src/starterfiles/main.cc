@@ -96,7 +96,7 @@ template <typename kind> inline span<kind> view(z n, kind *items)
     return span(items, n);
 }
 
-template <typename kind> inline constexpr kind pick(bool cond, kind a, kind b)
+template <typename kind> inline constexpr kind ifexp(bool cond, kind a, kind b)
 {
     return cond ? a : b;
 }
