@@ -81,17 +81,17 @@ template <typename... T> inline void in(T &...a)
     ((cin >> a), ...);
 }
 
-template <size_t max_n, typename kind> inline span<kind> view(z n, arr<max_n, kind> &items)
+template <size_t max_n, typename kind> inline span<kind> trunc(z n, arr<max_n, kind> &items)
 {
     return span(items).subspan(0, n);
 }
 
-template <typename kind> inline span<kind> view(z n, span<kind> &items)
+template <typename kind> inline span<kind> trunc(z n, span<kind> &items)
 {
     return items.subspan(0, n);
 }
 
-template <typename kind> inline span<kind> view(z n, kind *items)
+template <typename kind> inline span<kind> trunc(z n, kind *items)
 {
     return span(items, n);
 }
@@ -361,11 +361,11 @@ template <size_t max_n> struct coord_compress
 
     inline pair<span<z>, span<z>> press(span<z> items)
     {
-        origin = view(items.SIZE, _origin.DATA);
-        small  = view(items.SIZE, _small);
+        origin = trunc(items.SIZE, _origin.DATA);
+        small  = trunc(items.SIZE, _small);
         copy(all(items), origin.BEGIN);
         sort(all(origin));
-        origin                       = view(unique(all(origin)) - origin.BEGIN, origin);
+        origin                       = trunc(unique(all(origin)) - origin.BEGIN, origin);
         ascz(i, items.SIZE) small[i] = lower_bound(all(origin), items[i]) - origin.BEGIN;
         return make_pair(small, origin);
     }
