@@ -15,6 +15,24 @@ using namespace std;
 using namespace __gnu_pbds;
 
 #pragma endregion
+#pragma region bss
+
+template <size_t _, typename kind> kind _bssval;
+
+template <size_t id> struct _bss
+{
+    template <typename kind> inline static kind &_ref = _bssval<id, kind>;
+
+    template <size_t max_n, typename kind> consteval static auto _arr(size_t n = max_n)
+    {
+        return span(_bssval<id, arr<max_n, kind>>).subspan(0, n);
+    }
+};
+
+#define bss_arr _bss<__COUNTER__>::_arr // or __LINE__?
+#define bss     _bss<__COUNTER__>::_ref
+
+#pragma endregion
 #pragma region types
 
 using str                                    = string;
@@ -32,9 +50,15 @@ template <typename kind> using mset          = multiset<kind>;
 
 template <size_t n, typename kind> using arr = array<kind, n>;
 template <size_t n> using az                 = arr<n, z>;
+template <size_t n> using baz                = bss<az<n>>;
 
 using statset  = tree<z, null_type, less<z>, rb_tree_tag, tree_order_statistics_node_update>;
 using statmset = tree<pz, null_type, less<pz>, rb_tree_tag, tree_order_statistics_node_update>;
+
+constexpr unsigned long long operator"" _K(unsigned long long item)
+{
+    return item * 1'000;
+}
 
 #pragma endregion
 #pragma region macros
@@ -288,24 +312,6 @@ template <typename Head, typename... Tail> void _p(const Head &H, const Tail &..
 #else
 #define print(...)
 #endif
-
-#pragma endregion
-#pragma region bss
-
-template <size_t _, typename kind> kind _bssval;
-
-template <size_t id> struct _bss
-{
-    template <typename kind> inline static kind &_ref = _bssval<id, kind>;
-
-    template <size_t max_n, typename kind> consteval static auto _arr(size_t n = max_n)
-    {
-        return span(_bssval<id, arr<max_n, kind>>).subspan(0, n);
-    }
-};
-
-#define bss_arr _bss<__COUNTER__>::_arr // or __LINE__?
-#define bss     _bss<__COUNTER__>::_ref
 
 #pragma endregion
 #pragma region algos
