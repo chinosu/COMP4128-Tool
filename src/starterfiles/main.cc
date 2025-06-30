@@ -31,6 +31,7 @@ using vvz                                    = vec<vz>;
 template <typename kind> using mset          = multiset<kind>;
 
 template <size_t n, typename kind> using arr = array<kind, n>;
+template <size_t n> using az                 = arr<n, z>;
 
 using statset  = tree<z, null_type, less<z>, rb_tree_tag, tree_order_statistics_node_update>;
 using statmset = tree<pz, null_type, less<pz>, rb_tree_tag, tree_order_statistics_node_update>;
@@ -64,7 +65,7 @@ using statmset = tree<pz, null_type, less<pz>, rb_tree_tag, tree_order_statistic
 
 #define out                 cout <<
 #define err                 cerr <<
-#define nl                  << '\n';
+#define nl                  << '\n'
 
 #define ALL                 cin.tie
 #define YOUR                (nullptr)
@@ -77,7 +78,19 @@ using statmset = tree<pz, null_type, less<pz>, rb_tree_tag, tree_order_statistic
 #pragma endregion
 #pragma region functions
 
-template <typename... T> inline void in(T &...a)
+template <typename kind>
+concept cin_able = requires(istream &is, kind &k) {
+    { is >> k } -> same_as<istream &>;
+};
+
+template <cin_able... kind> inline auto in()
+{
+    tuple<kind...> t{};
+    apply([](kind &...item) { ((cin >> item), ...); }, t);
+    return t;
+}
+
+template <cin_able... kind> inline void in(kind &...a)
 {
     ((cin >> a), ...);
 }
@@ -384,14 +397,4 @@ int main()
 {
     ALL YOUR CONTESTS ARE BELONG TO US;
     print("‧₊˚ ⋅");
-
-    ref mq = bss<minque>;
-    mq.add(5);
-    mq.add(11);
-    mq.add(20);
-    print(mq.q);
-    mq.remove(5);
-    print(mq.q);
-
-    out "??" nl;
 }
