@@ -67,6 +67,7 @@ constexpr unsigned long long operator"" _K(unsigned long long item)
 #define ref                 auto &
 
 #define all(x)              x.begin(), x.end()
+#define rall(x)             x.rbegin(), x.rend()
 #define asc(i, start, stop) for (z i = start; i < stop; i += 1)
 #define ascz(i, stop)       for (z i = 0; i < stop; i += 1)
 #define asc1(i, stop)       for (z i = 1; i <= stop; i += 1)
