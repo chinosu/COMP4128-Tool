@@ -38,6 +38,7 @@ template <size_t id> struct _bss
 using str                                    = string;
 using z                                      = long long;
 const z    inf                               = numeric_limits<z>::max();
+const z    nil                               = 0;
 const auto gtz                               = greater<z>();
 using pz                                     = pair<z, z>;
 
@@ -89,6 +90,8 @@ constexpr unsigned long long operator"" _K(unsigned long long item)
 #define DATA                data()
 
 #define out                 cout <<
+#define outnl               cout << '\n'
+#define outsp               cout << ' '
 #define err                 cerr <<
 #define nl                  << '\n'
 #define sp                  << ' '
