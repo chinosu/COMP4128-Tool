@@ -25,7 +25,7 @@ template <size_t id> struct _bss
 
     template <size_t max_n, typename kind> consteval static auto _arr(size_t n = max_n)
     {
-        return span(_bssval<id, arr<max_n, kind>>).subspan(0, n);
+        return span(_bssval<id, array<kind, max_n>>).subspan(0, n);
     }
 };
 
@@ -50,7 +50,6 @@ template <typename kind> using mset          = multiset<kind>;
 
 template <size_t n, typename kind> using arr = array<kind, n>;
 template <size_t n> using az                 = arr<n, z>;
-template <size_t n> using baz                = bss<az<n>>;
 
 using statset  = tree<z, null_type, less<z>, rb_tree_tag, tree_order_statistics_node_update>;
 using statmset = tree<pz, null_type, less<pz>, rb_tree_tag, tree_order_statistics_node_update>;
@@ -90,6 +89,7 @@ constexpr unsigned long long operator"" _K(unsigned long long item)
 #define out                 cout <<
 #define err                 cerr <<
 #define nl                  << '\n'
+#define sp                  << ' '
 
 #define ALL                 cin.tie
 #define YOUR                (nullptr)
@@ -119,17 +119,17 @@ template <cin_able... kind> inline void in(kind &...a)
     ((cin >> a), ...);
 }
 
-template <size_t max_n, typename kind> inline span<kind> trunc(z n, arr<max_n, kind> &items)
+template <size_t max_n, typename kind> inline span<kind> trun(z n, arr<max_n, kind> &items)
 {
     return span(items).subspan(0, n);
 }
 
-template <typename kind> inline span<kind> trunc(z n, span<kind> &items)
+template <typename kind> inline span<kind> trun(z n, span<kind> &items)
 {
     return items.subspan(0, n);
 }
 
-template <typename kind> inline span<kind> trunc(z n, kind *items)
+template <typename kind> inline span<kind> trun(z n, kind *items)
 {
     return span(items, n);
 }
@@ -381,11 +381,11 @@ template <size_t max_n> struct coord_compress
 
     inline pair<span<z>, span<z>> press(span<z> items)
     {
-        origin = trunc(items.SIZE, _origin.DATA);
-        small  = trunc(items.SIZE, _small);
+        origin = trun(items.SIZE, _origin.DATA);
+        small  = trun(items.SIZE, _small);
         copy(all(items), origin.BEGIN);
         sort(all(origin));
-        origin                       = trunc(unique(all(origin)) - origin.BEGIN, origin);
+        origin                       = trun(unique(all(origin)) - origin.BEGIN, origin);
         ascz(i, items.SIZE) small[i] = lower_bound(all(origin), items[i]) - origin.BEGIN;
         return make_pair(small, origin);
     }
