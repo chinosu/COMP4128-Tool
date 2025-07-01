@@ -62,7 +62,8 @@ constexpr unsigned long long operator"" _K(unsigned long long item)
 #pragma endregion
 #pragma region macros
 
-#define var                 auto
+#define let                 decltype(auto)
+#define dup                 auto
 #define ref                 auto &
 
 #define all(x)              x.begin(), x.end()
@@ -223,9 +224,9 @@ template <size_t N> void __p(bitset<N> q);
 
 template <typename A> void __p(const A &x)
 {
-    var first = true;
+    let first = true;
     cerr << '[';
-    for (const var &i : x)
+    for (const ref i : x)
     {
         cerr << (first ? "" : ","), __p(i);
         first = false;
@@ -244,7 +245,7 @@ template <typename A, typename B> void __p(const pair<A, B> &p)
 
 template <typename... A> void __p(const tuple<A...> &t)
 {
-    var first = true;
+    let first = true;
     cerr << '(';
     apply([&first](const auto &...args) { ((cerr << (first ? "" : ","), __p(args), first = false), ...); }, t);
     cerr << ')';
