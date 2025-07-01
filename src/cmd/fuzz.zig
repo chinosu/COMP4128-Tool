@@ -19,25 +19,60 @@ pub fn fuzz(alloc: mem.Allocator) !void {
 
     var meta_random = Random.DefaultPrng.init(@intCast(time.nanoTimestamp()));
     var random = meta_random.random();
-    var in = try MList(u8).initCapacity(alloc, 64);
-    defer in.deinit();
-    if (!gen(&random, &in)) return log.err("gen fail", .{});
-    log.info("generate {d} bytes", .{in.items.len});
 
-    var main_child = try target.spawn(alloc, path.main_exe, in.items);
-    var slow_cihld = try target.spawn(alloc, path.slow_exe, in.items);
+    for (0..1_000_000) |i| {
+        var in = try MList(u8).initCapacity(alloc, 64);
+        defer in.deinit();
+        if (!gen(&random, &in)) return log.err("gen fail", .{});
+        // log.info("generate {d} bytes", .{in.items.len});
 
-    const out, const err = try target.wait(alloc, &main_child);
-    defer alloc.free(out);
-    alloc.free(err);
-    const slow_out, const slow_err = try target.wait(alloc, &slow_cihld);
-    defer alloc.free(slow_out);
-    alloc.free(slow_err);
+        var main_child = try target.spawn(alloc, path.main_exe, in.items);
+        var slow_cihld = try target.spawn(alloc, path.slow_exe, in.items);
 
-    log.info("from main collect {d} bytes", .{out.len});
-    log.info("from slow collect {d} bytes", .{slow_out.len});
+        const out, const err = try target.wait(alloc, &main_child);
+        defer alloc.free(out);
+        alloc.free(err);
+        const slow_out, const slow_err = try target.wait(alloc, &slow_cihld);
+        defer alloc.free(slow_out);
+        alloc.free(slow_err);
+
+        // log.info("from main collect {d} bytes", .{out.len});
+        // log.info("from slow collect {d} bytes", .{slow_out.len});
+
+        if (mem.eql(u8, slow_out, out)) {
+            log.info("fuzz {d} pass", .{i});
+            continue;
+        }
+
+        log.info("fuzz {d} fail", .{i});
+        var in_it = mem.tokenizeScalar(u8, in.items, '\n');
+        while (in_it.next()) |line| log.info(term.italic ++ "  {s}" ++ term.reset, .{line});
+
+        var width: usize = 0;
+        var exp_out_it = mem.tokenizeScalar(u8, slow_out, '\n');
+        while (exp_out_it.next()) |line| width = @max(width, 4 + line.len);
+        exp_out_it.reset();
+
+        var out_it = mem.tokenizeScalar(u8, out, '\n');
+        while (exp_out_it.peek() != null or out_it.peek() != null) {
+            const outex_line = exp_out_it.next() orelse "";
+            const out_line = out_it.next() orelse "";
+
+            var buf = try alloc.alloc(u8, width + out_line.len);
+            defer alloc.free(buf);
+            @memcpy(buf[0..outex_line.len], outex_line);
+            @memset(buf[outex_line.len..width], ' ');
+            @memcpy(buf[width..], out_line);
+            log.info("  {s}", .{buf});
+        }
+
+        var err_it = mem.tokenizeScalar(u8, err, '\n');
+        while (err_it.next()) |line| log.info("  (err) {s}", .{line});
+        break;
+    }
 }
 
+const term = @import("../term.zig");
 const cxx = @import("../cxx.zig");
 const zigc = @import("../zigc.zig");
 const path = @import("../path.zig");
