@@ -17,61 +17,28 @@ using namespace __gnu_pbds;
 #pragma endregion
 #pragma region bss
 
-template <size_t _, typename kind> kind _bssval;
+// template <size_t _, typename kind> kind _bssval;
 
-template <size_t id> struct _bss
-{
-    template <typename kind> inline static kind &_ref = _bssval<id, kind>;
+// template <size_t id> struct _bss
+// {
+//     template <typename kind> inline static kind &_ref = _bssval<id, kind>;
 
-    template <size_t max_n, typename kind> consteval static auto _arr(size_t n = max_n)
-    {
-        return span(_bssval<id, array<kind, max_n>>).subspan(0, n);
-    }
-};
+// template <size_t max_n, typename kind> consteval static auto _arr(size_t n = max_n)
+// {
+//     return span(_bssval<id, array<kind, max_n>>).subspan(0, n);
+// }
+// };
 
-#define bss_arr _bss<__COUNTER__>::_arr // or __LINE__?
-#define bss     _bss<__COUNTER__>::_ref
-
-#pragma endregion
-#pragma region types
-
-using str                                    = string;
-using z                                      = long long;
-const z    inf                               = numeric_limits<z>::max();
-const z    nil                               = 0;
-const auto gtz                               = greater<z>();
-using pz                                     = pair<z, z>;
-
-template <typename kind> using vec           = vector<kind>;
-using vz                                     = vec<z>;
-using vpz                                    = vec<pz>;
-using vvz                                    = vec<vz>;
-
-template <typename kind> using mset          = multiset<kind>;
-
-template <size_t n, typename kind> using arr = array<kind, n>;
-template <size_t n> using az                 = arr<n, z>;
-template <size_t n, size_t m> using aaz      = arr<n, az<m>>;
-
-using statset  = tree<z, null_type, less<z>, rb_tree_tag, tree_order_statistics_node_update>;
-using statmset = tree<pz, null_type, less<pz>, rb_tree_tag, tree_order_statistics_node_update>;
-
-constexpr unsigned long long operator"" _K(unsigned long long item)
-{
-    return item * 1'000;
-}
-
-constexpr unsigned long long operator"" _M(unsigned long long item)
-{
-    return item * 1'000'000;
-}
+// #define bss_arr _bss<__COUNTER__>::_arr // or __LINE__?
+// #define bss     _bss<__COUNTER__>::_ref
 
 #pragma endregion
 #pragma region macros
 
-#define let                 decltype(auto)
-#define dup                 auto
+#define let                 auto
 #define ref                 auto &
+#define uniq                static let
+#define infer               decltype(auto)
 
 #define all(x)              x.begin(), x.end()
 #define rall(x)             x.rbegin(), x.rend()
@@ -79,12 +46,8 @@ constexpr unsigned long long operator"" _M(unsigned long long item)
 #define ascz(i, stop)       for (z i = 0; i < stop; i += 1)
 #define asc1(i, stop)       for (z i = 1; i <= stop; i += 1)
 #define dsc(i, start, stop) for (z i = start; i > stop; i -= 1)
-#define forch(item, items)  for (ref item : items)
 #define ifnot(cond)         if (!(cond))
 #define elif                else if
-#define imin(a, b)          a = min(a, b);
-#define imax(a, b)          a = max(a, b);
-#define iamod(a, b, m)      a = (a + b) % m
 
 #define SIZE                size()
 #define BEGIN               begin()
@@ -111,6 +74,30 @@ constexpr unsigned long long operator"" _M(unsigned long long item)
 #define US                  ;
 
 #pragma endregion
+#pragma region types
+
+using str                                    = string;
+using z                                      = long long;
+const z    inf                               = numeric_limits<z>::max();
+const z    nil                               = 0;
+const auto gtz                               = greater<z>();
+using pz                                     = pair<z, z>;
+
+template <size_t n, typename kind> using mat = array<kind, n>;
+template <size_t n> using mz                 = mat<n, z>;
+template <size_t n, size_t m> using mmz      = mat<n, mz<m>>;
+template <size_t n> using mpz                = mat<n, pz>;
+
+template <typename kind> using vec           = vector<kind>;
+using vz                                     = vec<z>;
+using vpz                                    = vec<pz>;
+using vvz                                    = vec<vz>;
+
+template <typename kind> using mset          = multiset<kind>;
+using statset  = tree<z, null_type, less<z>, rb_tree_tag, tree_order_statistics_node_update>;
+using statmset = tree<pz, null_type, less<pz>, rb_tree_tag, tree_order_statistics_node_update>;
+
+#pragma endregion
 #pragma region functions
 
 template <typename kind>
@@ -130,19 +117,40 @@ template <cin_able... kind> inline void in(kind &...a)
     ((cin >> a), ...);
 }
 
-template <size_t max_n, typename kind> inline span<kind> trun(z n, arr<max_n, kind> &items)
+template <size_t max_n, typename kind> inline span<kind> snip(z n, mat<max_n, kind> &items)
 {
     return span(items).subspan(0, n);
 }
 
-template <typename kind> inline span<kind> trun(z n, span<kind> &items)
+template <typename kind> inline span<kind> snip(z n, span<kind> &items)
 {
     return items.subspan(0, n);
 }
 
-template <typename kind> inline span<kind> trun(z n, kind *items)
+template <typename kind> inline span<kind> snip(z n, kind *items)
 {
     return span(items, n);
+}
+
+template <size_t max_n, typename kind> inline infer matsnip(size_t n)
+{
+    mat<max_n, kind> a;
+    return make_pair(a, snip(n, a));
+}
+
+template <typename kind> inline void imax(kind &a, const kind &b)
+{
+    a = max(a, b);
+}
+
+template <typename kind> inline void imin(kind &a, const kind &b)
+{
+    a = min(a, b);
+}
+
+template <typename kind> inline void iamod(kind &a, const kind &b, const kind &m)
+{
+    a = (a + b) % m;
 }
 
 template <typename kind> inline constexpr kind ifexp(bool cond, kind a, kind b)
@@ -150,34 +158,49 @@ template <typename kind> inline constexpr kind ifexp(bool cond, kind a, kind b)
     return cond ? a : b;
 }
 
-template <typename kind> inline constexpr bool inrange(kind left, kind mid, kind right)
+template <typename kind> inline constexpr bool within(kind left, kind mid, kind right)
 {
     return left <= mid and mid < right;
 }
 
-template <typename kind> decltype(auto) get0(const kind &k)
+template <typename kind> inline constexpr infer logceil(kind x)
+{
+    return bit_width(x - 1);
+}
+
+template <typename kind> inline infer get0(const kind &k)
 {
     return get<0>(k);
 }
 
-template <typename kind> decltype(auto) get1(const kind &k)
+template <typename kind> inline infer get1(const kind &k)
 {
     return get<1>(k);
 }
 
-template <typename kind> decltype(auto) get2(const kind &k)
+template <typename kind> inline infer get2(const kind &k)
 {
     return get<2>(k);
 }
 
-template <typename kind> decltype(auto) get3(const kind &k)
+template <typename kind> inline infer get3(const kind &k)
 {
     return get<3>(k);
 }
 
-template <typename kind> decltype(auto) get4(const kind &k)
+template <typename kind> inline infer get4(const kind &k)
 {
     return get<4>(k);
+}
+
+constexpr unsigned long long operator"" _K(unsigned long long item)
+{
+    return item * 1'000;
+}
+
+constexpr unsigned long long operator"" _M(unsigned long long item)
+{
+    return item * 1'000'000;
 }
 
 #pragma endregion
@@ -350,13 +373,13 @@ template <typename Head, typename... Tail> void _p(const Head &H, const Tail &..
 #endif
 
 #pragma endregion
-#pragma region algos
+#pragma region algo
 
 template <size_t max_n> struct dsu
 {
     z             n;
-    arr<max_n, z> parent;
-    arr<max_n, z> rank;
+    mat<max_n, z> parent;
+    mat<max_n, z> rank;
 
     inline void ini(z n)
     {
@@ -410,24 +433,24 @@ struct minque
 
 template <size_t max_n> struct coord_compress
 {
-    arr<max_n, z> _origin;
+    mat<max_n, z> _origin;
     span<z>       origin;
-    arr<max_n, z> _small;
+    mat<max_n, z> _small;
     span<z>       small;
 
     inline pair<span<z>, span<z>> press(span<z> items)
     {
-        origin = trun(items.SIZE, _origin.DATA);
-        small  = trun(items.SIZE, _small);
+        origin = snip(items.SIZE, _origin.DATA);
+        small  = snip(items.SIZE, _small);
         copy(all(items), origin.BEGIN);
         sort(all(origin));
-        origin                       = trun(unique(all(origin)) - origin.BEGIN, origin);
+        origin                       = snip(unique(all(origin)) - origin.BEGIN, origin);
         ascz(i, items.SIZE) small[i] = lower_bound(all(origin), items[i]) - origin.BEGIN;
         return make_pair(small, origin);
     }
 };
 
-struct range_tree
+struct _TODO_range_tree
 {
     z  n;
     z *oak;
@@ -438,5 +461,4 @@ struct range_tree
 int main()
 {
     ALL YOUR CONTESTS ARE BELONG TO US;
-    print("‧₊˚ ⋅");
 }
