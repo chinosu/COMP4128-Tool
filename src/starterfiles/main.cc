@@ -19,7 +19,8 @@ using namespace __gnu_pbds;
 
 #define let                 auto
 #define ref                 auto &
-#define uniq                static let
+#define uniq                static constinit
+#define uniqz               static constinit z
 #define infer               decltype(auto)
 
 #define all(x)              x.begin(), x.end()
@@ -58,24 +59,71 @@ using namespace __gnu_pbds;
 #pragma endregion
 #pragma region types
 
-using str                                    = string;
-using z                                      = long long;
-const z    inf                               = numeric_limits<z>::max();
-const z    nil                               = 0;
-const auto gtz                               = greater<z>();
-using pz                                     = pair<z, z>;
+using str      = string;
+using z        = long long;
+const z    inf = numeric_limits<z>::max();
+const z    nil = 0;
+const auto gtz = greater<z>();
+using pz       = pair<z, z>;
 
-template <size_t n, typename kind> using mat = array<kind, n>;
-template <size_t n> using mz                 = mat<n, z>;
-template <size_t n, size_t m> using mmz      = mat<n, mz<m>>;
-template <size_t n> using mpz                = mat<n, pz>;
+template <size_t maxn, typename kind> struct ray : array<kind, maxn>
+{
+    using typename array<kind, maxn>::value_type;
+    using typename array<kind, maxn>::reference;
+    using typename array<kind, maxn>::const_reference;
+    using typename array<kind, maxn>::iterator;
+    using typename array<kind, maxn>::const_iterator;
+    using typename array<kind, maxn>::size_type;
+    using typename array<kind, maxn>::reverse_iterator;
+    using typename array<kind, maxn>::const_reverse_iterator;
+    using array<kind, maxn>::begin;
+    using array<kind, maxn>::cbegin;
+    using array<kind, maxn>::data;
+    using array<kind, maxn>::operator[];
 
-template <typename kind> using vec           = vector<kind>;
-using vz                                     = vec<z>;
-using vpz                                    = vec<pz>;
-using vvz                                    = vec<vz>;
+    constexpr ray() : std::array<kind, maxn>{}, n(maxn) {}
 
-template <typename kind> using mset          = multiset<kind>;
+    size_t n;
+
+    inline void resize(size_t val) noexcept
+    {
+        assert((size_t) 0 <= val and val < maxn);
+        n = max((size_t) 0, min(val, maxn));
+    }
+
+    inline constexpr void fill(const value_type &v) { fill_n(begin(), size(), v); }
+
+    inline constexpr iterator end() noexcept { return begin() + n; }
+
+    inline constexpr const_iterator end() const noexcept { return begin() + n; }
+
+    inline constexpr reverse_iterator rbegin() noexcept { return reverse_iterator(end()); }
+
+    inline constexpr const_reverse_iterator rbegin() const noexcept { return const_reverse_iterator(end()); }
+
+    inline constexpr const_iterator cend() const noexcept { return end(); }
+
+    inline constexpr const_reverse_iterator crbegin() const noexcept { return const_reverse_iterator(end()); }
+
+    inline constexpr size_type size() const noexcept { return n; }
+
+    inline constexpr bool empty() const noexcept { return size() == 0; }
+
+    inline constexpr reference back() noexcept { return *(end() - 1); }
+
+    inline constexpr const_reference back() const noexcept { return *(end() - 1); }
+};
+
+template <size_t maxn> using rz               = ray<maxn, z>;
+template <size_t maxn, size_t maxm> using rrz = ray<maxn, rz<maxm>>;
+template <size_t maxn> using rpz              = ray<maxn, pz>;
+
+template <typename kind> using vec            = vector<kind>;
+using vz                                      = vec<z>;
+using vpz                                     = vec<pz>;
+using vvz                                     = vec<vz>;
+
+template <typename kind> using mset           = multiset<kind>;
 using statset  = tree<z, null_type, less<z>, rb_tree_tag, tree_order_statistics_node_update>;
 using statmset = tree<pz, null_type, less<pz>, rb_tree_tag, tree_order_statistics_node_update>;
 
@@ -95,21 +143,6 @@ template <cin_able... kind> inline auto in()
 }
 
 template <cin_able... kind> inline void in(kind &...a) { ((cin >> a), ...); }
-
-template <size_t maxn, typename kind> inline span<kind> snip(z n, mat<maxn, kind> &items)
-{
-    return span(items).subspan(0, n);
-}
-
-template <typename kind> inline span<kind> snip(z n, span<kind> &items) { return items.subspan(0, n); }
-
-template <typename kind> inline span<kind> snip(z n, kind *items) { return span(items, n); }
-
-template <size_t maxn, typename kind> inline infer matsnip(size_t n)
-{
-    mat<maxn, kind> a;
-    return make_pair(a, snip(n, a));
-}
 
 template <typename kind> inline void imax(kind &a, const kind &b) { a = max(a, b); }
 
@@ -270,11 +303,13 @@ template <typename Head, typename... Tail> void _p(const Head &H, const Tail &..
 template <size_t maxn> struct dsu
 {
     z            n;
-    mat<maxn, z> parent;
-    mat<maxn, z> rank;
+    ray<maxn, z> parent;
+    ray<maxn, z> rank;
 
     inline void ini(z n)
     {
+        parent.resize(n);
+        rank.resize(n);
         iota(all(parent), 0);
         fill(all(rank), 1);
     }
@@ -319,20 +354,17 @@ struct minque
 
 template <size_t maxn> struct coord_compress
 {
-    mat<maxn, z> _origin;
-    span<z>      origin;
-    mat<maxn, z> _small;
-    span<z>      small;
+    ray<maxn, z> origin;
+    ray<maxn, z> small;
 
-    inline pair<span<z>, span<z>> press(span<z> items)
+    inline void press(span<z> items)
     {
-        origin = snip(items.SIZE, _origin.DATA);
-        small  = snip(items.SIZE, _small);
+        origin.resize(items.SIZE);
+        small.resize(items.SIZE);
         copy(all(items), origin.BEGIN);
         sort(all(origin));
-        origin                       = snip(unique(all(origin)) - origin.BEGIN, origin);
-        ascz(i, items.SIZE) small[i] = lower_bound(all(origin), items[i]) - origin.BEGIN;
-        return make_pair(small, origin);
+        origin.resize(unique(all(origin)) - origin.BEGIN);
+        ascz (i, items.SIZE) small[i] = lower_bound(all(origin), items[i]) - origin.BEGIN;
     }
 };
 
@@ -344,60 +376,8 @@ struct _TODO_range_tree
 
 #pragma endregion
 
-// #define sn(name, n)                                                                                                    \
-//     real_##name;                                                                                                       \
-//     let name = snip(n, real_##name)
-
-template <size_t maxn, typename kind> struct bun : array<kind, maxn>
-{
-    using typename array<kind, maxn>::value_type;
-    using typename array<kind, maxn>::reference;
-    using typename array<kind, maxn>::const_reference;
-    using typename array<kind, maxn>::iterator;
-    using typename array<kind, maxn>::const_iterator;
-    using typename array<kind, maxn>::size_type;
-    using typename array<kind, maxn>::reverse_iterator;
-    using typename array<kind, maxn>::const_reverse_iterator;
-    using array<kind, maxn>::begin;
-    using array<kind, maxn>::cbegin;
-    using array<kind, maxn>::data;
-    using array<kind, maxn>::operator[];
-
-    size_t n = maxn;
-
-    inline void resize(size_t s) noexcept { n = s; }
-
-    inline constexpr void fill(const value_type &v) { fill_n(begin(), size(), v); }
-
-    [[gnu::const]] inline constexpr iterator end() noexcept { return begin() + n; }
-
-    inline constexpr const_iterator end() const noexcept { return begin() + n; }
-
-    [[gnu::const]] inline constexpr reverse_iterator rbegin() noexcept { return reverse_iterator(end()); }
-
-    inline constexpr const_reverse_iterator rbegin() const noexcept { return const_reverse_iterator(end()); }
-
-    inline constexpr const_iterator cend() const noexcept { return end(); }
-
-    inline constexpr const_reverse_iterator crbegin() const noexcept { return const_reverse_iterator(end()); }
-
-    [[gnu::const, gnu::always_inline]] inline constexpr size_type size() const noexcept { return n; }
-
-    [[gnu::const, gnu::always_inline]] inline constexpr bool empty() const noexcept { return size() == 0; }
-
-    inline constexpr reference back() noexcept { return *(end() - 1); }
-
-    inline constexpr const_reference back() const noexcept { return *(end() - 1); }
-
-    template <size_t maxn, typename kind>
-    constexpr inline bool operator==(const bun<maxn, kind> &one, const bun<maxn, kind> &two)
-    {
-        return __equal_aux1(one.begin(), one.end(), two.begin());
-    }
-};
-
 int main()
 {
     ALL YOUR CONTESTS ARE BELONG TO US;
-    print();
+    print("‧₊˚ ⋅");
 }
