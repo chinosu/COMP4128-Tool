@@ -51,6 +51,7 @@ template <typename kind> using mset          = multiset<kind>;
 
 template <size_t n, typename kind> using arr = array<kind, n>;
 template <size_t n> using az                 = arr<n, z>;
+template <size_t n, size_t m> using aaz      = arr<n, az<m>>;
 
 using statset  = tree<z, null_type, less<z>, rb_tree_tag, tree_order_statistics_node_update>;
 using statmset = tree<pz, null_type, less<pz>, rb_tree_tag, tree_order_statistics_node_update>;
@@ -58,6 +59,11 @@ using statmset = tree<pz, null_type, less<pz>, rb_tree_tag, tree_order_statistic
 constexpr unsigned long long operator"" _K(unsigned long long item)
 {
     return item * 1'000;
+}
+
+constexpr unsigned long long operator"" _M(unsigned long long item)
+{
+    return item * 1'000'000;
 }
 
 #pragma endregion
@@ -147,6 +153,31 @@ template <typename kind> inline constexpr kind ifexp(bool cond, kind a, kind b)
 template <typename kind> inline constexpr bool inrange(kind left, kind mid, kind right)
 {
     return left <= mid and mid < right;
+}
+
+template <typename kind> decltype(auto) get0(const kind &k)
+{
+    return get<0>(k);
+}
+
+template <typename kind> decltype(auto) get1(const kind &k)
+{
+    return get<1>(k);
+}
+
+template <typename kind> decltype(auto) get2(const kind &k)
+{
+    return get<2>(k);
+}
+
+template <typename kind> decltype(auto) get3(const kind &k)
+{
+    return get<3>(k);
+}
+
+template <typename kind> decltype(auto) get4(const kind &k)
+{
+    return get<4>(k);
 }
 
 #pragma endregion
