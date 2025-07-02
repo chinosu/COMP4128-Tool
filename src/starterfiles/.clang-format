@@ -140,7 +140,12 @@ ForEachMacros:
   - Q_FOREACH
   - BOOST_FOREACH
 IfMacros:
+  - asc
+  - ascz
+  - asc1
+  - dsc
   - ifnot
+  - elif
   - KJ_IF_MAYBE
 IncludeBlocks:   Preserve # or maybe: Regroup
 IncludeCategories:
