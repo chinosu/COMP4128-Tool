@@ -94,165 +94,81 @@ template <cin_able... kind> inline auto in()
     return t;
 }
 
-template <cin_able... kind> inline void in(kind &...a)
-{
-    ((cin >> a), ...);
-}
+template <cin_able... kind> inline void in(kind &...a) { ((cin >> a), ...); }
 
-template <size_t max_n, typename kind> inline span<kind> snip(z n, mat<max_n, kind> &items)
+template <size_t maxn, typename kind> inline span<kind> snip(z n, mat<maxn, kind> &items)
 {
     return span(items).subspan(0, n);
 }
 
-template <typename kind> inline span<kind> snip(z n, span<kind> &items)
-{
-    return items.subspan(0, n);
-}
+template <typename kind> inline span<kind> snip(z n, span<kind> &items) { return items.subspan(0, n); }
 
-template <typename kind> inline span<kind> snip(z n, kind *items)
-{
-    return span(items, n);
-}
+template <typename kind> inline span<kind> snip(z n, kind *items) { return span(items, n); }
 
-template <size_t max_n, typename kind> inline infer matsnip(size_t n)
+template <size_t maxn, typename kind> inline infer matsnip(size_t n)
 {
-    mat<max_n, kind> a;
+    mat<maxn, kind> a;
     return make_pair(a, snip(n, a));
 }
 
-template <typename kind> inline void imax(kind &a, const kind &b)
-{
-    a = max(a, b);
-}
+template <typename kind> inline void imax(kind &a, const kind &b) { a = max(a, b); }
 
-template <typename kind> inline void imin(kind &a, const kind &b)
-{
-    a = min(a, b);
-}
+template <typename kind> inline void imin(kind &a, const kind &b) { a = min(a, b); }
 
-template <typename kind> inline void iamod(kind &a, const kind &b, const kind &m)
-{
-    a = (a + b) % m;
-}
+template <typename kind> inline void iamod(kind &a, const kind &b, const kind &m) { a = (a + b) % m; }
 
-template <typename kind> inline constexpr kind ifexp(bool cond, kind a, kind b)
-{
-    return cond ? a : b;
-}
+template <typename kind> inline constexpr kind ifexp(bool cond, kind a, kind b) { return cond ? a : b; }
 
 template <typename kind> inline constexpr bool within(kind left, kind mid, kind right)
 {
     return left <= mid and mid < right;
 }
 
-template <typename kind> inline constexpr infer logceil(kind x)
-{
-    return bit_width(x - 1);
-}
+template <typename kind> inline constexpr infer logceil(kind x) { return bit_width(x - 1); }
 
-template <typename kind> inline infer get0(const kind &k)
-{
-    return get<0>(k);
-}
+template <typename kind> inline infer get0(const kind &k) { return get<0>(k); }
 
-template <typename kind> inline infer get1(const kind &k)
-{
-    return get<1>(k);
-}
+template <typename kind> inline infer get1(const kind &k) { return get<1>(k); }
 
-template <typename kind> inline infer get2(const kind &k)
-{
-    return get<2>(k);
-}
+template <typename kind> inline infer get2(const kind &k) { return get<2>(k); }
 
-template <typename kind> inline infer get3(const kind &k)
-{
-    return get<3>(k);
-}
+template <typename kind> inline infer get3(const kind &k) { return get<3>(k); }
 
-template <typename kind> inline infer get4(const kind &k)
-{
-    return get<4>(k);
-}
+template <typename kind> inline infer get4(const kind &k) { return get<4>(k); }
 
-constexpr unsigned long long operator"" _K(unsigned long long item)
-{
-    return item * 1'000;
-}
+constexpr unsigned long long operator"" _K(unsigned long long item) { return item * 1'000; }
 
-constexpr unsigned long long operator"" _M(unsigned long long item)
-{
-    return item * 1'000'000;
-}
+constexpr unsigned long long operator"" _M(unsigned long long item) { return item * 1'000'000; }
 
 #pragma endregion
 #pragma region debugprint
 
 #ifdef __DEBUG__
-void __p(int x)
-{
-    cerr << x;
-}
+void __p(int x) { cerr << x; }
 
-void __p(long x)
-{
-    cerr << x;
-}
+void __p(long x) { cerr << x; }
 
-void __p(long long x)
-{
-    cerr << x;
-}
+void __p(long long x) { cerr << x; }
 
-void __p(unsigned x)
-{
-    cerr << x;
-}
+void __p(unsigned x) { cerr << x; }
 
-void __p(unsigned long x)
-{
-    cerr << x;
-}
+void __p(unsigned long x) { cerr << x; }
 
-void __p(unsigned long long x)
-{
-    cerr << x;
-}
+void __p(unsigned long long x) { cerr << x; }
 
-void __p(float x)
-{
-    cerr << x;
-}
+void __p(float x) { cerr << x; }
 
-void __p(double x)
-{
-    cerr << x;
-}
+void __p(double x) { cerr << x; }
 
-void __p(long double x)
-{
-    cerr << x;
-}
+void __p(long double x) { cerr << x; }
 
-void __p(char x)
-{
-    cerr << '\'' << x << '\'';
-}
+void __p(char x) { cerr << '\'' << x << '\''; }
 
-void __p(const char *x)
-{
-    cerr << '"' << x << '"';
-}
+void __p(const char *x) { cerr << '"' << x << '"'; }
 
-void __p(const string &x)
-{
-    cerr << '"' << x << '"';
-}
+void __p(const string &x) { cerr << '"' << x << '"'; }
 
-void __p(bool x)
-{
-    cerr << (x ? "true" : "false");
-}
+void __p(bool x) { cerr << (x ? "true" : "false"); }
 
 template <typename A> void __p(const A &x);
 template <typename A, typename B> void __p(const pair<A, B> &p);
@@ -328,15 +244,9 @@ template <typename T, typename... U> void __p(priority_queue<T, U...> q)
     __p(v);
 }
 
-template <size_t N> void __p(bitset<N> q)
-{
-    cerr << q;
-}
+template <size_t N> void __p(bitset<N> q) { cerr << q; }
 
-void _p()
-{
-    cerr << "]\n";
-}
+void _p() { cerr << "]\n"; }
 
 template <typename Head, typename... Tail> void _p(const Head &H, const Tail &...T)
 {
@@ -357,11 +267,11 @@ template <typename Head, typename... Tail> void _p(const Head &H, const Tail &..
 #pragma endregion
 #pragma region algo
 
-template <size_t max_n> struct dsu
+template <size_t maxn> struct dsu
 {
-    z             n;
-    mat<max_n, z> parent;
-    mat<max_n, z> rank;
+    z            n;
+    mat<maxn, z> parent;
+    mat<maxn, z> rank;
 
     inline void ini(z n)
     {
@@ -386,15 +296,9 @@ template <size_t max_n> struct dsu
         return true;
     }
 
-    inline bool same(z i, z j)
-    {
-        return find(i) == find(j);
-    }
+    inline bool same(z i, z j) { return find(i) == find(j); }
 
-    inline int size(z i)
-    {
-        return rank[find(i)];
-    }
+    inline int size(z i) { return rank[find(i)]; }
 };
 
 struct minque
@@ -413,12 +317,12 @@ struct minque
     }
 };
 
-template <size_t max_n> struct coord_compress
+template <size_t maxn> struct coord_compress
 {
-    mat<max_n, z> _origin;
-    span<z>       origin;
-    mat<max_n, z> _small;
-    span<z>       small;
+    mat<maxn, z> _origin;
+    span<z>      origin;
+    mat<maxn, z> _small;
+    span<z>      small;
 
     inline pair<span<z>, span<z>> press(span<z> items)
     {
@@ -440,7 +344,60 @@ struct _TODO_range_tree
 
 #pragma endregion
 
+// #define sn(name, n)                                                                                                    \
+//     real_##name;                                                                                                       \
+//     let name = snip(n, real_##name)
+
+template <size_t maxn, typename kind> struct bun : array<kind, maxn>
+{
+    using typename array<kind, maxn>::value_type;
+    using typename array<kind, maxn>::reference;
+    using typename array<kind, maxn>::const_reference;
+    using typename array<kind, maxn>::iterator;
+    using typename array<kind, maxn>::const_iterator;
+    using typename array<kind, maxn>::size_type;
+    using typename array<kind, maxn>::reverse_iterator;
+    using typename array<kind, maxn>::const_reverse_iterator;
+    using array<kind, maxn>::begin;
+    using array<kind, maxn>::cbegin;
+    using array<kind, maxn>::data;
+    using array<kind, maxn>::operator[];
+
+    size_t n = maxn;
+
+    inline void resize(size_t s) noexcept { n = s; }
+
+    inline constexpr void fill(const value_type &v) { fill_n(begin(), size(), v); }
+
+    [[gnu::const]] inline constexpr iterator end() noexcept { return begin() + n; }
+
+    inline constexpr const_iterator end() const noexcept { return begin() + n; }
+
+    [[gnu::const]] inline constexpr reverse_iterator rbegin() noexcept { return reverse_iterator(end()); }
+
+    inline constexpr const_reverse_iterator rbegin() const noexcept { return const_reverse_iterator(end()); }
+
+    inline constexpr const_iterator cend() const noexcept { return end(); }
+
+    inline constexpr const_reverse_iterator crbegin() const noexcept { return const_reverse_iterator(end()); }
+
+    [[gnu::const, gnu::always_inline]] inline constexpr size_type size() const noexcept { return n; }
+
+    [[gnu::const, gnu::always_inline]] inline constexpr bool empty() const noexcept { return size() == 0; }
+
+    inline constexpr reference back() noexcept { return *(end() - 1); }
+
+    inline constexpr const_reference back() const noexcept { return *(end() - 1); }
+
+    template <size_t maxn, typename kind>
+    constexpr inline bool operator==(const bun<maxn, kind> &one, const bun<maxn, kind> &two)
+    {
+        return __equal_aux1(one.begin(), one.end(), two.begin());
+    }
+};
+
 int main()
 {
     ALL YOUR CONTESTS ARE BELONG TO US;
+    print();
 }
