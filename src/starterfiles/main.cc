@@ -41,13 +41,6 @@ using namespace __gnu_pbds;
 #define BACK                back()
 #define DATA                data()
 
-#define out                 cout <<
-#define outnl               cout << '\n'
-#define outsp               cout << ' '
-#define err                 cerr <<
-#define nl                  << '\n'
-#define sp                  << ' '
-
 #define ALL                 cin.tie
 #define YOUR                (nullptr)
 #define CONTESTS            ;
@@ -59,12 +52,12 @@ using namespace __gnu_pbds;
 #pragma endregion
 #pragma region types
 
-using str      = string;
-using z        = long long;
-const z    inf = numeric_limits<z>::max();
-const z    nil = 0;
-const auto gtz = greater<z>();
-using pz       = pair<z, z>;
+using str     = string;
+using z       = long long;
+const z   inf = numeric_limits<z>::max();
+const z   nil = 0;
+const let gtz = greater<z>();
+using pz      = pair<z, z>;
 
 template <size_t maxn, typename kind> struct ray : array<kind, maxn>
 {
@@ -89,6 +82,7 @@ template <size_t maxn, typename kind> struct ray : array<kind, maxn>
     {
         assert((size_t) 0 <= val and val < maxn);
         n = max((size_t) 0, min(val, maxn));
+        // n = val;
     }
 
     inline constexpr void fill(const value_type &v) { fill_n(begin(), size(), v); }
@@ -131,18 +125,23 @@ using statmset = tree<pz, null_type, less<pz>, rb_tree_tag, tree_order_statistic
 #pragma region functions
 
 template <typename kind>
-concept cin_able = requires(istream &is, kind &k) {
+concept istream_able = requires(istream &is, kind &k) {
     { is >> k } -> same_as<istream &>;
 };
 
-template <cin_able... kind> inline auto in()
-{
-    tuple<kind...> t{};
-    apply([](kind &...item) { ((cin >> item), ...); }, t);
-    return t;
-}
+template <istream_able... kind> inline void in(kind &...a) { ((cin >> a), ...); }
 
-template <cin_able... kind> inline void in(kind &...a) { ((cin >> a), ...); }
+template <typename kind>
+concept ostream_able = requires(ostream &os, const kind &k) {
+    { os << k } -> same_as<ostream &>;
+};
+
+const let sp = ' ';
+const let nl = '\n';
+
+template <ostream_able... kind> inline void out(kind... a) { ((cout << a), ...); }
+
+template <ostream_able... kind> inline void err(kind... a) { ((cerr << a), ...); }
 
 template <typename kind> inline void imax(kind &a, const kind &b) { a = max(a, b); }
 
