@@ -59,22 +59,24 @@ const z   nil = 0;
 const let gtz = greater<z>();
 using pz      = pair<z, z>;
 
-template <size_t maxn, typename kind> struct ray : array<kind, maxn>
+template <size_t maxn, typename t> struct ray : array<t, maxn>
 {
-    using typename array<kind, maxn>::value_type;
-    using typename array<kind, maxn>::reference;
-    using typename array<kind, maxn>::const_reference;
-    using typename array<kind, maxn>::iterator;
-    using typename array<kind, maxn>::const_iterator;
-    using typename array<kind, maxn>::size_type;
-    using typename array<kind, maxn>::reverse_iterator;
-    using typename array<kind, maxn>::const_reverse_iterator;
-    using array<kind, maxn>::begin;
-    using array<kind, maxn>::cbegin;
-    using array<kind, maxn>::data;
-    using array<kind, maxn>::operator[];
+    using typename array<t, maxn>::value_type;
+    using typename array<t, maxn>::reference;
+    using typename array<t, maxn>::const_reference;
+    using typename array<t, maxn>::iterator;
+    using typename array<t, maxn>::const_iterator;
+    using typename array<t, maxn>::size_type;
+    using typename array<t, maxn>::reverse_iterator;
+    using typename array<t, maxn>::const_reverse_iterator;
+    using array<t, maxn>::begin;
+    using array<t, maxn>::cbegin;
+    using array<t, maxn>::data;
+    using array<t, maxn>::operator[];
 
-    constexpr ray() : std::array<kind, maxn>{}, n(maxn) {}
+    constexpr ray() : std::array<t, maxn>{}, n(maxn)
+    {
+    }
 
     size_t n;
 
@@ -85,122 +87,241 @@ template <size_t maxn, typename kind> struct ray : array<kind, maxn>
         // n = val;
     }
 
-    inline constexpr void fill(const value_type &v) { fill_n(begin(), size(), v); }
+    inline constexpr void fill(const value_type &v)
+    {
+        fill_n(begin(), size(), v);
+    }
 
-    inline constexpr iterator end() noexcept { return begin() + n; }
+    inline constexpr iterator end() noexcept
+    {
+        return begin() + n;
+    }
 
-    inline constexpr const_iterator end() const noexcept { return begin() + n; }
+    inline constexpr const_iterator end() const noexcept
+    {
+        return begin() + n;
+    }
 
-    inline constexpr reverse_iterator rbegin() noexcept { return reverse_iterator(end()); }
+    inline constexpr reverse_iterator rbegin() noexcept
+    {
+        return reverse_iterator(end());
+    }
 
-    inline constexpr const_reverse_iterator rbegin() const noexcept { return const_reverse_iterator(end()); }
+    inline constexpr const_reverse_iterator rbegin() const noexcept
+    {
+        return const_reverse_iterator(end());
+    }
 
-    inline constexpr const_iterator cend() const noexcept { return end(); }
+    inline constexpr const_iterator cend() const noexcept
+    {
+        return end();
+    }
 
-    inline constexpr const_reverse_iterator crbegin() const noexcept { return const_reverse_iterator(end()); }
+    inline constexpr const_reverse_iterator crbegin() const noexcept
+    {
+        return const_reverse_iterator(end());
+    }
 
-    inline constexpr size_type size() const noexcept { return n; }
+    inline constexpr size_type size() const noexcept
+    {
+        return n;
+    }
 
-    inline constexpr bool empty() const noexcept { return size() == 0; }
+    inline constexpr bool empty() const noexcept
+    {
+        return size() == 0;
+    }
 
-    inline constexpr reference back() noexcept { return *(end() - 1); }
+    inline constexpr reference back() noexcept
+    {
+        return *(end() - 1);
+    }
 
-    inline constexpr const_reference back() const noexcept { return *(end() - 1); }
+    inline constexpr const_reference back() const noexcept
+    {
+        return *(end() - 1);
+    }
 };
 
 template <size_t maxn> using rz               = ray<maxn, z>;
 template <size_t maxn, size_t maxm> using rrz = ray<maxn, rz<maxm>>;
 template <size_t maxn> using rpz              = ray<maxn, pz>;
 
-template <typename kind> using vec            = vector<kind>;
+template <typename t> using vec               = vector<t>;
 using vz                                      = vec<z>;
 using vpz                                     = vec<pz>;
 using vvz                                     = vec<vz>;
 
-template <typename kind> using mset           = multiset<kind>;
+template <size_t maxn> using rvz              = ray<maxn, vz>;
+
+template <typename t> using mset              = multiset<t>;
 using statset  = tree<z, null_type, less<z>, rb_tree_tag, tree_order_statistics_node_update>;
 using statmset = tree<pz, null_type, less<pz>, rb_tree_tag, tree_order_statistics_node_update>;
 
 #pragma endregion
 #pragma region functions
 
-template <typename kind>
-concept istream_able = requires(istream &is, kind &k) {
+template <typename t>
+concept istream_able = requires(istream &is, t &k) {
     { is >> k } -> same_as<istream &>;
 };
 
-template <istream_able... kind> inline void in(kind &...a) { ((cin >> a), ...); }
+template <istream_able... t> inline void in(t &...a)
+{
+    ((cin >> a), ...);
+}
 
-template <typename kind>
-concept ostream_able = requires(ostream &os, const kind &k) {
+template <typename t>
+concept ostream_able = requires(ostream &os, const t &k) {
     { os << k } -> same_as<ostream &>;
 };
 
 const let sp = ' ';
 const let nl = '\n';
 
-template <ostream_able... kind> inline void out(kind... a) { ((cout << a), ...); }
+template <ostream_able... t> inline void out(t... a)
+{
+    ((cout << a), ...);
+}
 
-template <ostream_able... kind> inline void err(kind... a) { ((cerr << a), ...); }
+template <ostream_able... t> inline void err(t... a)
+{
+    ((cerr << a), ...);
+}
 
-template <typename kind> inline void imax(kind &a, const kind &b) { a = max(a, b); }
+template <typename t> inline void imax(t &a, const t &b)
+{
+    a = max(a, b);
+}
 
-template <typename kind> inline void imin(kind &a, const kind &b) { a = min(a, b); }
+template <typename t> inline void imin(t &a, const t &b)
+{
+    a = min(a, b);
+}
 
-template <typename kind> inline void iamod(kind &a, const kind &b, const kind &m) { a = (a + b) % m; }
+template <typename t> inline void iamod(t &a, const t &b, const t &m)
+{
+    a = (a + b) % m;
+}
 
-template <typename kind> inline constexpr kind ifexp(bool cond, kind a, kind b) { return cond ? a : b; }
+template <typename t> inline constexpr t ifexp(bool cond, t a, t b)
+{
+    return cond ? a : b;
+}
 
-template <typename kind> inline constexpr bool within(kind left, kind mid, kind right)
+template <typename t> inline constexpr bool within(t left, t mid, t right)
 {
     return left <= mid and mid < right;
 }
 
-template <typename kind> inline constexpr infer logceil(kind x) { return bit_width(x - 1); }
+template <typename t> inline constexpr infer logceil(t x)
+{
+    return bit_width(x - 1);
+}
 
-template <typename kind> inline infer get0(const kind &k) { return get<0>(k); }
+template <typename t> inline infer get0(const t &k)
+{
+    return get<0>(k);
+}
 
-template <typename kind> inline infer get1(const kind &k) { return get<1>(k); }
+template <typename t> inline infer get1(const t &k)
+{
+    return get<1>(k);
+}
 
-template <typename kind> inline infer get2(const kind &k) { return get<2>(k); }
+template <typename t> inline infer get2(const t &k)
+{
+    return get<2>(k);
+}
 
-template <typename kind> inline infer get3(const kind &k) { return get<3>(k); }
+template <typename t> inline infer get3(const t &k)
+{
+    return get<3>(k);
+}
 
-template <typename kind> inline infer get4(const kind &k) { return get<4>(k); }
+template <typename t> inline infer get4(const t &k)
+{
+    return get<4>(k);
+}
 
-constexpr unsigned long long operator"" _K(unsigned long long item) { return item * 1'000; }
+constexpr unsigned long long operator"" _K(unsigned long long item)
+{
+    return item * 1'000;
+}
 
-constexpr unsigned long long operator"" _M(unsigned long long item) { return item * 1'000'000; }
+constexpr unsigned long long operator"" _M(unsigned long long item)
+{
+    return item * 1'000'000;
+}
 
 #pragma endregion
 #pragma region debugprint
 
 #ifdef __DEBUG__
-void __p(int x) { cerr << x; }
+void __p(int x)
+{
+    cerr << x;
+}
 
-void __p(long x) { cerr << x; }
+void __p(long x)
+{
+    cerr << x;
+}
 
-void __p(long long x) { cerr << x; }
+void __p(long long x)
+{
+    cerr << x;
+}
 
-void __p(unsigned x) { cerr << x; }
+void __p(unsigned x)
+{
+    cerr << x;
+}
 
-void __p(unsigned long x) { cerr << x; }
+void __p(unsigned long x)
+{
+    cerr << x;
+}
 
-void __p(unsigned long long x) { cerr << x; }
+void __p(unsigned long long x)
+{
+    cerr << x;
+}
 
-void __p(float x) { cerr << x; }
+void __p(float x)
+{
+    cerr << x;
+}
 
-void __p(double x) { cerr << x; }
+void __p(double x)
+{
+    cerr << x;
+}
 
-void __p(long double x) { cerr << x; }
+void __p(long double x)
+{
+    cerr << x;
+}
 
-void __p(char x) { cerr << '\'' << x << '\''; }
+void __p(char x)
+{
+    cerr << '\'' << x << '\'';
+}
 
-void __p(const char *x) { cerr << '"' << x << '"'; }
+void __p(const char *x)
+{
+    cerr << '"' << x << '"';
+}
 
-void __p(const string &x) { cerr << '"' << x << '"'; }
+void __p(const string &x)
+{
+    cerr << '"' << x << '"';
+}
 
-void __p(bool x) { cerr << (x ? "true" : "false"); }
+void __p(bool x)
+{
+    cerr << (x ? "true" : "false");
+}
 
 template <typename A> void __p(const A &x);
 template <typename A, typename B> void __p(const pair<A, B> &p);
@@ -276,9 +397,15 @@ template <typename T, typename... U> void __p(priority_queue<T, U...> q)
     __p(v);
 }
 
-template <size_t N> void __p(bitset<N> q) { cerr << q; }
+template <size_t N> void __p(bitset<N> q)
+{
+    cerr << q;
+}
 
-void _p() { cerr << "]\n"; }
+void _p()
+{
+    cerr << "]\n";
+}
 
 template <typename Head, typename... Tail> void _p(const Head &H, const Tail &...T)
 {
@@ -330,9 +457,15 @@ template <size_t maxn> struct dsu
         return true;
     }
 
-    inline bool same(z i, z j) { return find(i) == find(j); }
+    inline bool same(z i, z j)
+    {
+        return find(i) == find(j);
+    }
 
-    inline int size(z i) { return rank[find(i)]; }
+    inline int size(z i)
+    {
+        return rank[find(i)];
+    }
 };
 
 struct minque
@@ -363,7 +496,7 @@ template <size_t maxn> struct coord_compress
         copy(all(items), origin.BEGIN);
         sort(all(origin));
         origin.resize(unique(all(origin)) - origin.BEGIN);
-        ascz (i, items.SIZE) small[i] = lower_bound(all(origin), items[i]) - origin.BEGIN;
+        ascz(i, items.SIZE) small[i] = lower_bound(all(origin), items[i]) - origin.BEGIN;
     }
 };
 
