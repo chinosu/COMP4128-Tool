@@ -59,7 +59,7 @@ const z   nil = 0;
 const let gtz = greater<z>();
 using pz      = pair<z, z>;
 
-template <size_t maxn, typename t> struct ray : array<t, maxn>
+template <size_t maxn, typename t> struct ls : array<t, maxn>
 {
     using typename array<t, maxn>::value_type;
     using typename array<t, maxn>::reference;
@@ -74,7 +74,7 @@ template <size_t maxn, typename t> struct ray : array<t, maxn>
     using array<t, maxn>::data;
     using array<t, maxn>::operator[];
 
-    constexpr ray() : std::array<t, maxn>{}, n(maxn)
+    constexpr ls() : std::array<t, maxn>{}, n(maxn)
     {
     }
 
@@ -143,16 +143,16 @@ template <size_t maxn, typename t> struct ray : array<t, maxn>
     }
 };
 
-template <size_t maxn> using rz               = ray<maxn, z>;
-template <size_t maxn, size_t maxm> using rrz = ray<maxn, rz<maxm>>;
-template <size_t maxn> using rpz              = ray<maxn, pz>;
+template <size_t maxn> using lz               = ls<maxn, z>;
+template <size_t maxn, size_t maxm> using llz = ls<maxn, lz<maxm>>;
+template <size_t maxn> using lpz              = ls<maxn, pz>;
 
 template <typename t> using vec               = vector<t>;
 using vz                                      = vec<z>;
 using vpz                                     = vec<pz>;
 using vvz                                     = vec<vz>;
 
-template <size_t maxn> using rvz              = ray<maxn, vz>;
+template <size_t maxn> using rvz              = ls<maxn, vz>;
 
 template <typename t> using mset              = multiset<t>;
 using statset  = tree<z, null_type, less<z>, rb_tree_tag, tree_order_statistics_node_update>;
@@ -428,9 +428,9 @@ template <typename Head, typename... Tail> void _p(const Head &H, const Tail &..
 
 template <size_t maxn> struct dsu
 {
-    z            n;
-    ray<maxn, z> parent;
-    ray<maxn, z> rank;
+    z           n;
+    ls<maxn, z> parent;
+    ls<maxn, z> rank;
 
     inline void ini(z n)
     {
@@ -486,8 +486,8 @@ struct minque
 
 template <size_t maxn> struct coord_compress
 {
-    ray<maxn, z> origin;
-    ray<maxn, z> small;
+    ls<maxn, z> origin;
+    ls<maxn, z> small;
 
     inline void press(span<z> items)
     {
