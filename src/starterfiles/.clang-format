@@ -75,7 +75,7 @@ AllowShortCaseExpressionOnASingleLine: true
 AllowShortCaseLabelsOnASingleLine: true
 AllowShortCompoundRequirementOnASingleLine: true
 AllowShortEnumsOnASingleLine: true
-AllowShortFunctionsOnASingleLine: All
+AllowShortFunctionsOnASingleLine: None # or maybe: All
 AllowShortIfStatementsOnASingleLine: AllIfsAndElse
 AllowShortLambdasOnASingleLine: All
 AllowShortLoopsOnASingleLine: true
@@ -140,10 +140,10 @@ ForEachMacros:
   - Q_FOREACH
   - BOOST_FOREACH
 IfMacros:
-  - asc
-  - ascz
-  - asc1
-  - dsc
+  # - asc
+  # - ascz
+  # - asc1
+  # - dsc
   - ifnot
   - elif
   - KJ_IF_MAYBE
