@@ -59,6 +59,7 @@ const z   nil                    = 0;
 const z   one                    = 0;
 const let gtz                    = greater<z>();
 using pz                         = pair<z, z>;
+using tz                         = tuple<z, z, z>;
 template <typename t> using heap = priority_queue<t, vector<t>, greater<t>>;
 
 template <size_t maxn, typename t> struct ls : array<t, maxn>
