@@ -29,7 +29,7 @@ using namespace __gnu_pbds;
 #define ascz(i, stop)       for (z i = 0; i < stop; i += 1)
 #define asc1(i, stop)       for (z i = 1; i <= stop; i += 1)
 #define dsc(i, start, stop) for (z i = start; i > stop; i -= 1)
-#define ifnot(cond)         if (!(cond))
+#define guard(cond)         if (!(cond))
 #define elif                else if
 
 #define SIZE                size()
@@ -52,12 +52,14 @@ using namespace __gnu_pbds;
 #pragma endregion
 #pragma region types
 
-using str     = string;
-using z       = long long;
-const z   inf = numeric_limits<z>::max();
-const z   nil = 0;
-const let gtz = greater<z>();
-using pz      = pair<z, z>;
+using str                        = string;
+using z                          = long long;
+const z   inf                    = numeric_limits<z>::max();
+const z   nil                    = 0;
+const z   one                    = 0;
+const let gtz                    = greater<z>();
+using pz                         = pair<z, z>;
+template <typename t> using heap = priority_queue<t, vector<t>, greater<t>>;
 
 template <size_t maxn, typename t> struct ls : array<t, maxn>
 {
@@ -82,7 +84,7 @@ template <size_t maxn, typename t> struct ls : array<t, maxn>
 
     inline void resize(size_t val) noexcept
     {
-        assert((size_t) 0 <= val and val < maxn);
+        assert((size_t) 0 <= val and val <= maxn);
         n = max((size_t) 0, min(val, maxn));
         // n = val;
     }
@@ -254,13 +256,20 @@ constexpr unsigned long long operator"" _M(unsigned long long item)
     return item * 1'000'000;
 }
 
+constexpr unsigned long long operator"" _B(unsigned long long item)
+{
+    return item * 1'000'000'000;
+}
+
 #pragma endregion
 #pragma region debugprint
 
 #ifdef __DEBUG__
 void __p(int x)
 {
-    cerr << x;
+    if (x == numeric_limits<int>::max()) cerr << "∞";
+    elif (x == -numeric_limits<int>::max()) cerr << "-∞";
+    else cerr << x;
 }
 
 void __p(long x)
@@ -270,7 +279,9 @@ void __p(long x)
 
 void __p(long long x)
 {
-    cerr << x;
+    if (x == numeric_limits<long long>::max()) cerr << "∞";
+    elif (x == -numeric_limits<long long>::max()) cerr << "-∞";
+    else cerr << x;
 }
 
 void __p(unsigned x)
