@@ -17,6 +17,7 @@ pub fn spawn(alloc: mem.Allocator, src: []const u8, exe: []const u8, opts: enum 
             "-O2",
             "-W" ++ "float-equal",
             "-W" ++ "logical-op",
+            // "-W" ++ "shadow",
             "-f" ++ "diagnostics-color=always",
             "-f" ++ "no-sanitize-recover",
             "-f" ++ "stack-protector",
