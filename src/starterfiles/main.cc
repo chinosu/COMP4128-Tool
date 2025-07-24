@@ -1,275 +1,149 @@
-#pragma region yap
-
-#include <bits/stdc++.h>
-#include <ext/pb_ds/assoc_container.hpp>
-#include <ext/pb_ds/hash_policy.hpp>
-#include <ext/pb_ds/list_update_policy.hpp>
-#include <ext/pb_ds/tag_and_trait.hpp>
-#include <ext/pb_ds/tree_policy.hpp>
-#include <ext/pb_ds/trie_policy.hpp>
-
 #pragma optimization_level 3
 #pragma GCC optimize("Ofast,no-stack-protector,unroll-loops,fast-math,O3")
-
+#include <bits/stdc++.h>
 using namespace std;
-using namespace __gnu_pbds;
 
-#pragma endregion
-#pragma region macros
+// #include <ext/pb_ds/assoc_container.hpp>
+// #include <ext/pb_ds/hash_policy.hpp>
+// #include <ext/pb_ds/list_update_policy.hpp>
+// #include <ext/pb_ds/tag_and_trait.hpp>
+// #include <ext/pb_ds/tree_policy.hpp>
+// #include <ext/pb_ds/trie_policy.hpp>
+// using namespace __gnu_pbds;
+// using statset                    = tree<z, null_type, less<z>, rb_tree_tag, tree_order_statistics_node_update>;
+// using statmset                   = tree<pz, null_type, less<pz>, rb_tree_tag, tree_order_statistics_node_update>;
 
-#define let                 auto
-#define ref                 auto &
-#define uniq                static constinit
-#define uniqz               static constinit z
-#define infer               decltype(auto)
-
-#define all(x)              x.begin(), x.end()
-#define rall(x)             x.rbegin(), x.rend()
-#define asc(i, start, stop) for (z i = start; i < stop; i += 1)
-#define ascz(i, stop)       for (z i = 0; i < stop; i += 1)
-#define asc1(i, stop)       for (z i = 1; i <= stop; i += 1)
-#define dsc(i, start, stop) for (z i = start; i > stop; i -= 1)
-#define guard(cond)         if (!(cond))
-#define elif                else if
-
-#define SIZE                size()
-#define BEGIN               begin()
-#define END                 end()
-#define REND                rend()
-#define RBEGIN              rbegin()
-#define FRONT               front()
-#define BACK                back()
-#define DATA                data()
-
-#define ALL                 cin.tie
-#define YOUR                (nullptr)
-#define CONTESTS            ;
-#define ARE                 cin.sync_with_stdio
-#define BELONG              (false);
-#define TO                  cout << fixed << setprecision(9)
-#define US                  ;
-
-#pragma endregion
-#pragma region types
-
-using str                        = string;
 using z                          = long long;
-const z   inf                    = numeric_limits<z>::max();
-const z   nil                    = 0;
-const z   one                    = 0;
-const let gtz                    = greater<z>();
 using pz                         = pair<z, z>;
 using tz                         = tuple<z, z, z>;
-template <typename t> using heap = priority_queue<t, vector<t>, greater<t>>;
+const z maxz                     = numeric_limits<z>::max();
+const z nil                      = 0;
+using str                        = string;
+template <typename t> using gt   = greater<t>;
+template <typename t> using vec  = vector<t>;
+template <typename t> using heap = priority_queue<t, vec<t>, gt<t>>;
+using vz                         = vec<z>;
+using vvz                        = vec<vz>;
+using vvvz                       = vec<vvz>;
+using vpz                        = vec<pz>;
+using vtz                        = vec<tz>;
+template <typename t> using mset = multiset<t>;
+const char sp                    = ' ';
+const char nl                    = '\n';
 
-template <size_t maxn, typename t> struct ls : array<t, maxn>
+#define var                 auto
+#define ref                 auto &
+#define perm                static constinit
+#define all(x)              x.begin(), x.end()
+#define ascz(i, stop)       for (z i = 0; i < stop; i += 1)
+#define asc(i, start, stop) for (z i = start; i < stop; i += 1)
+#define dsc(i, start, stop) for (z i = start; stop < i; i - = 1)
+#define guard(cond)         if (!(cond))
+#define main                                                                                                           \
+    int main()                                                                                                         \
+    {                                                                                                                  \
+        cin.tie(nullptr);                                                                                              \
+        cin.sync_with_stdio(false);                                                                                    \
+        cout << fixed << setprecision(9);
+#define niam }
+
+// template <typename t, size_t n, typename fn> constexpr array<t, n> arrayfill(fn &&f)
+// {
+//     array<t, n> a{};
+//     for (size_t i = 0; i < n; i += 1) a[i] = f(i);
+//     return a;
+// }
+
+// template <typename t, size_t n, size_t... m> constexpr auto make_matrix(t ini = t{})
+// {
+//     if constexpr (sizeof...(m) == 0)
+//     {
+//         array<t, n> a{};
+//         fill(a.begin(), a.end(), ini);
+//         return a;
+//     }
+//     else
+//     {
+//         array<decltype(make_matrix<t, m...>(ini)), n> a{};
+//         fill(a.begin(), a.end(), make_matrix<t, m...>(ini));
+//         return a;
+//     }
+// }
+
+// template <typename t, t ini = t{}, typename first, typename... rest> auto mvec(first f, rest... r)
+// {
+//     static_assert(is_integral_v<first>);
+//     if constexpr (sizeof...(rest) == 0) return vector<t>(f, ini);
+//     else return vector<decltype(mvec<t, ini>(r...))>(f, mvec<t, ini>(r...));
+// }
+
+inline void in(auto &...x)
 {
-    using typename array<t, maxn>::value_type;
-    using typename array<t, maxn>::reference;
-    using typename array<t, maxn>::const_reference;
-    using typename array<t, maxn>::iterator;
-    using typename array<t, maxn>::const_iterator;
-    using typename array<t, maxn>::size_type;
-    using typename array<t, maxn>::reverse_iterator;
-    using typename array<t, maxn>::const_reverse_iterator;
-    using array<t, maxn>::begin;
-    using array<t, maxn>::cbegin;
-    using array<t, maxn>::data;
-    using array<t, maxn>::operator[];
-
-    constexpr ls() : std::array<t, maxn>{}, n(maxn)
-    {
-    }
-
-    size_t n;
-
-    inline void resize(size_t val) noexcept
-    {
-        assert((size_t) 0 <= val and val <= maxn);
-        n = max((size_t) 0, min(val, maxn));
-        // n = val;
-    }
-
-    inline constexpr void fill(const value_type &v)
-    {
-        fill_n(begin(), size(), v);
-    }
-
-    inline constexpr iterator end() noexcept
-    {
-        return begin() + n;
-    }
-
-    inline constexpr const_iterator end() const noexcept
-    {
-        return begin() + n;
-    }
-
-    inline constexpr reverse_iterator rbegin() noexcept
-    {
-        return reverse_iterator(end());
-    }
-
-    inline constexpr const_reverse_iterator rbegin() const noexcept
-    {
-        return const_reverse_iterator(end());
-    }
-
-    inline constexpr const_iterator cend() const noexcept
-    {
-        return end();
-    }
-
-    inline constexpr const_reverse_iterator crbegin() const noexcept
-    {
-        return const_reverse_iterator(end());
-    }
-
-    inline constexpr size_type size() const noexcept
-    {
-        return n;
-    }
-
-    inline constexpr bool empty() const noexcept
-    {
-        return size() == 0;
-    }
-
-    inline constexpr reference back() noexcept
-    {
-        return *(end() - 1);
-    }
-
-    inline constexpr const_reference back() const noexcept
-    {
-        return *(end() - 1);
-    }
-};
-
-template <size_t maxn> using lz               = ls<maxn, z>;
-template <size_t maxn, size_t maxm> using llz = ls<maxn, lz<maxm>>;
-template <size_t maxn> using lpz              = ls<maxn, pz>;
-
-template <typename t> using vec               = vector<t>;
-using vz                                      = vec<z>;
-using vpz                                     = vec<pz>;
-using vvz                                     = vec<vz>;
-
-template <size_t maxn> using rvz              = ls<maxn, vz>;
-
-template <typename t> using mset              = multiset<t>;
-using statset  = tree<z, null_type, less<z>, rb_tree_tag, tree_order_statistics_node_update>;
-using statmset = tree<pz, null_type, less<pz>, rb_tree_tag, tree_order_statistics_node_update>;
-
-#pragma endregion
-#pragma region functions
-
-template <typename t>
-concept istream_able = requires(istream &is, t &k) {
-    { is >> k } -> same_as<istream &>;
-};
-
-template <istream_able... t> inline void in(t &...a)
-{
-    ((cin >> a), ...);
+    ((cin >> x), ...);
 }
 
-template <typename t>
-concept ostream_able = requires(ostream &os, const t &k) {
-    { os << k } -> same_as<ostream &>;
-};
+#define zin                                                                                                            \
+    ({                                                                                                                 \
+        z x;                                                                                                           \
+        in(x);                                                                                                         \
+        x;                                                                                                             \
+    })
 
-const let sp = ' ';
-const let nl = '\n';
-
-template <ostream_able... t> inline void out(t... a)
+inline void out(auto... x)
 {
-    ((cout << a), ...);
+    ((cout << x), ...);
 }
 
-template <ostream_able... t> inline void err(t... a)
+inline void err(auto... x)
 {
-    ((cerr << a), ...);
+    ((cerr << x), ...);
 }
 
-template <typename t> inline void imax(t &a, const t &b)
+inline void imax(auto &a, const auto &b)
 {
     a = max(a, b);
 }
 
-template <typename t> inline void imin(t &a, const t &b)
+inline void imin(auto &a, const auto &b)
 {
     a = min(a, b);
 }
 
-template <typename t> inline void iamod(t &a, const t &b, const t &m)
+inline void iamod(auto &a, const auto &b, const auto &m)
 {
     a = (a + b) % m;
 }
 
-template <typename t> inline constexpr t ifexp(bool cond, t a, t b)
-{
-    return cond ? a : b;
-}
-
-template <typename t> inline constexpr bool within(t left, t mid, t right)
+inline bool wthn(const auto left, const auto mid, const auto right)
 {
     return left <= mid and mid < right;
 }
 
-template <typename t> inline constexpr infer logceil(t x)
+template <typename t> inline constexpr decltype(auto) logceil(t x)
 {
     return bit_width(x - 1);
 }
 
-template <typename t> inline infer get0(const t &k)
+constexpr unsigned long long operator""_K(unsigned long long x)
 {
-    return get<0>(k);
+    return x * 1'000;
 }
 
-template <typename t> inline infer get1(const t &k)
+constexpr unsigned long long operator""_M(unsigned long long x)
 {
-    return get<1>(k);
+    return x * 1'000'000;
 }
 
-template <typename t> inline infer get2(const t &k)
+constexpr unsigned long long operator""_B(unsigned long long x)
 {
-    return get<2>(k);
+    return x * 1'000'000'000;
 }
-
-template <typename t> inline infer get3(const t &k)
-{
-    return get<3>(k);
-}
-
-template <typename t> inline infer get4(const t &k)
-{
-    return get<4>(k);
-}
-
-constexpr unsigned long long operator"" _K(unsigned long long item)
-{
-    return item * 1'000;
-}
-
-constexpr unsigned long long operator"" _M(unsigned long long item)
-{
-    return item * 1'000'000;
-}
-
-constexpr unsigned long long operator"" _B(unsigned long long item)
-{
-    return item * 1'000'000'000;
-}
-
-#pragma endregion
-#pragma region debugprint
 
 #ifdef __DEBUG__
 void __p(int x)
 {
     if (x == numeric_limits<int>::max()) cerr << "∞";
-    elif (x == -numeric_limits<int>::max()) cerr << "-∞";
+    else if (x == -numeric_limits<int>::max()) cerr << "-∞";
     else cerr << x;
 }
 
@@ -281,7 +155,7 @@ void __p(long x)
 void __p(long long x)
 {
     if (x == numeric_limits<long long>::max()) cerr << "∞";
-    elif (x == -numeric_limits<long long>::max()) cerr << "-∞";
+    else if (x == -numeric_limits<long long>::max()) cerr << "-∞";
     else cerr << x;
 }
 
@@ -345,7 +219,7 @@ template <size_t N> void __p(bitset<N> q);
 
 template <typename A> void __p(const A &x)
 {
-    let first = true;
+    auto first = true;
     cerr << '[';
     for (const ref i : x)
     {
@@ -366,7 +240,7 @@ template <typename A, typename B> void __p(const pair<A, B> &p)
 
 template <typename... A> void __p(const tuple<A...> &t)
 {
-    let first = true;
+    auto first = true;
     cerr << '(';
     apply([&first](const auto &...args) { ((cerr << (first ? "" : ","), __p(args), first = false), ...); }, t);
     cerr << ')';
@@ -435,33 +309,26 @@ template <typename Head, typename... Tail> void _p(const Head &H, const Tail &..
 #define print(...)
 #endif
 
-#pragma endregion
-#pragma region algo
-
-template <size_t maxn> struct dsu
+template <typename t, int s> struct dsu
 {
-    z           n;
-    ls<maxn, z> parent;
-    ls<maxn, z> rank;
+    t parent[s];
+    t rank[s];
 
-    inline void ini(z n)
+    constexpr dsu()
     {
-        parent.resize(n);
-        rank.resize(n);
-        iota(all(parent), 0);
-        fill(all(rank), 1);
+        iota(parent, parent + s, 0);
+        fill(rank, rank + s, 1);
     }
 
-    inline z find(z i)
+    inline int find(t i)
     {
         while (parent[i] != i) i = parent[i] = parent[parent[i]];
         return i;
     }
 
-    inline bool unite(z i, z j)
+    inline bool unite(t i, t j)
     {
-        z pi = find(i);
-        z pj = find(j);
+        t pi = find(i), pj = find(j);
         if (pi == pj) return false;
         if (rank[pi] < rank[pj]) swap(pi, pj);
         parent[pj]  = pi;
@@ -469,59 +336,149 @@ template <size_t maxn> struct dsu
         return true;
     }
 
-    inline bool same(z i, z j)
+    inline bool same(t i, t j)
     {
         return find(i) == find(j);
     }
 
-    inline int size(z i)
+    inline int size(t i)
     {
         return rank[find(i)];
     }
 };
 
-struct minque
+template <typename t> struct minque
 {
-    deque<z> q;
+    deque<t> q;
 
-    inline void add(z item)
+    inline void add(t x)
     {
-        while (q.SIZE and q.BACK > item) q.pop_back();
-        q.push_back(item);
+        while (q.size() and x < q.back()) q.pop_back();
+        q.emplace_back(x);
     }
 
-    inline void remove(z item)
+    inline void remove(t x)
     {
-        if (q.SIZE and q.FRONT == item) q.pop_front();
-    }
-};
-
-template <size_t maxn> struct coord_compress
-{
-    ls<maxn, z> origin;
-    ls<maxn, z> small;
-
-    inline void press(span<z> items)
-    {
-        origin.resize(items.SIZE);
-        small.resize(items.SIZE);
-        copy(all(items), origin.BEGIN);
-        sort(all(origin));
-        origin.resize(unique(all(origin)) - origin.BEGIN);
-        ascz(i, items.SIZE) small[i] = lower_bound(all(origin), items[i]) - origin.BEGIN;
+        if (q.size() and x == q.front()) q.pop_front();
     }
 };
 
-struct _TODO_range_tree
+template <typename t, int n> inline auto compress(t (&at)[n], t (&revert)[n])
 {
-    z  n;
-    z *oak;
-};
-
-#pragma endregion
-
-int main()
-{
-    ALL YOUR CONTESTS ARE BELONG TO US;
-    print("‧₊˚ ⋅");
+    copy(at, at + n, revert);
+    sort(revert, revert + n);
+    int len = unique(revert, revert + n) - revert;
+    for (int i = 0; i < n; i += 1) at[i] = lower_bound(revert, revert + len, at[i]) - revert;
+    return len;
 }
+
+template <int n, int m, typename f, f flowinf> struct flow
+{
+    int tot = 1, s = 0, t = 0;
+    int hd[n]{}, cur[n]{}, dis[n]{};
+    int q[n]{}, qhd = 0, qtl = 0;
+
+    struct
+    {
+        int to, next;
+        f   cap;
+    } e[m << 1]{};
+
+    inline void clear()
+    {
+        tot = 1;
+        fill(hd, hd + n, 0);
+    }
+
+    inline void add(int u, int v, f w)
+    {
+        e[++tot].next = hd[u], hd[u] = tot, e[tot].to = v, e[tot].cap = w;
+        e[++tot].next = hd[v], hd[v] = tot, e[tot].to = u, e[tot].cap = 0;
+    }
+
+    inline bool bfs()
+    {
+        copy(hd, hd + n, cur);
+        fill(dis, dis + n, -1);
+        q[qhd = qtl = 1] = s;
+        dis[s]           = 0;
+        while (qhd <= qtl)
+        {
+            int u = q[qhd++];
+            for (int i = hd[u], v; i; i = e[i].next)
+            {
+                if (dis[v = e[i].to] == -1 and e[i].cap != 0)
+                {
+                    dis[v]   = dis[u] + 1;
+                    q[++qtl] = v;
+                }
+            }
+        }
+        return dis[t] != -1;
+    }
+
+    f dfs(int u, f rem)
+    {
+        if (u == t) return rem;
+        f flow = 0;
+        for (int i = cur[u], v; i and rem; i = e[i].next)
+        {
+            cur[u] = i;
+            v      = e[i].to;
+            f nw   = min(rem, e[i].cap);
+            if (nw != 0 and dis[v] == dis[u] + 1)
+            {
+                int ret       = dfs(v, nw);
+                flow         += ret;
+                rem          -= ret;
+                e[i].cap     -= ret;
+                e[i ^ 1].cap += ret;
+            }
+        }
+        if (flow == 0) dis[u] = -1;
+        return flow;
+    }
+
+    f dinic(int source, int sink)
+    {
+        s = source, t = sink;
+        f flow = 0;
+        while (bfs()) flow += dfs(s, flowinf);
+        return flow;
+    }
+};
+
+/* ------------------------------- */ main; /* ------------------------------- */
+
+perm pz directions[]{
+    {-1, 0 },
+    {1,  0 },
+    {0,  -1},
+    {0,  1 }
+};
+perm flow<90_K + 2, 360_K, z, maxz> f;
+
+z                                   n = zin, s = 0, t = 1;
+var                                 v = [&](z i, z j) { return 2 + i * n + j; };
+vec<vec<char>>                      g(n, vec<char>(n));
+print(n);
+ascz(i, n) ascz(j, n) in(g[i][j]);
+print(g);
+
+ascz(i, n) ascz(j, n)
+{
+    guard(g[i][j] == '#') continue;
+    if (i + j & 1) f.add(s, v(i, j), 1);
+    else f.add(v(i, j), t, 1);
+    for (ref[di, dj] : directions)
+    {
+        guard(wthn(nil, i + di, n)) continue;
+        guard(wthn(nil, j + dj, n)) continue;
+        if (i + j & 1) f.add(v(i, j), v(i + di, j + dj), 1);
+    }
+}
+
+z ans = f.dinic(s, t);
+out(ans, nl);
+
+/* ------------------------------- */ niam; /* ------------------------------- */
