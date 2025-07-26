@@ -73,5 +73,16 @@ pub fn ini(name: []const u8) !void {
     // };
 }
 
+pub fn ini_code(name: []const u8, alloc: Allocator) !void {
+    try ini(name);
+    _ = try run(.{
+        .allocator = alloc,
+        .argv = &.{ "code", name, "--reuse-window" },
+        .expand_arg0 = .expand,
+    });
+}
+
 const path = @import("../path.zig");
 const fs = @import("std").fs;
+const Allocator = @import("std").mem.Allocator;
+const run = @import("std").process.Child.run;

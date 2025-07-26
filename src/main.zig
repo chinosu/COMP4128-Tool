@@ -18,17 +18,15 @@ pub fn main() !void {
     } else if (eql(u8, c, "meta")) {
         @panic("todo");
     } else if (eql(u8, c, "c") or eql(u8, c, "code")) {
-        _ = try run(.{
-            .allocator = alloc,
-            .argv = &.{ "code", path.main_src, path.tests },
-            .expand_arg0 = .expand,
-        });
+        const name = args.next() orelse return log.err("you must specify a name", .{});
+        try ini_code(name, alloc);
     } else {
         return log.err("unrecognized command '{s}'", .{c});
     }
 }
 
 const ini = @import("cmd/ini.zig").ini;
+const ini_code = @import("cmd/ini.zig").ini_code;
 const tests = @import("cmd/tests.zig").tests;
 const fuzz = @import("cmd/fuzz.zig").fuzz;
 const path = @import("path.zig");
