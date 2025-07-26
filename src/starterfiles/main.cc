@@ -62,13 +62,6 @@ inline void in(auto &...x)
     ((cin >> x), ...);
 }
 
-#define zin                                                                                                            \
-    ({                                                                                                                 \
-        z x;                                                                                                           \
-        in(x);                                                                                                         \
-        x;                                                                                                             \
-    })
-
 inline void out(auto... x)
 {
     ((cout << x), ...);
