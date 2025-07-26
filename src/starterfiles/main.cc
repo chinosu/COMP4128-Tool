@@ -46,36 +46,16 @@ const char nl                    = '\n';
         cin.sync_with_stdio(false);                                                                                    \
         cout << fixed << setprecision(9);
 #define niam }
+#define scan(...)                                                                                                      \
+    __VA_ARGS__;                                                                                                       \
+    in(__VA_ARGS__)
 
-// template <typename t, size_t n, typename fn> constexpr array<t, n> arrayfill(fn &&f)
-// {
-//     array<t, n> a{};
-//     for (size_t i = 0; i < n; i += 1) a[i] = f(i);
-//     return a;
-// }
-
-// template <typename t, size_t n, size_t... m> constexpr auto make_matrix(t ini = t{})
-// {
-//     if constexpr (sizeof...(m) == 0)
-//     {
-//         array<t, n> a{};
-//         fill(a.begin(), a.end(), ini);
-//         return a;
-//     }
-//     else
-//     {
-//         array<decltype(make_matrix<t, m...>(ini)), n> a{};
-//         fill(a.begin(), a.end(), make_matrix<t, m...>(ini));
-//         return a;
-//     }
-// }
-
-// template <typename t, t ini = t{}, typename first, typename... rest> auto mvec(first f, rest... r)
-// {
-//     static_assert(is_integral_v<first>);
-//     if constexpr (sizeof...(rest) == 0) return vector<t>(f, ini);
-//     else return vector<decltype(mvec<t, ini>(r...))>(f, mvec<t, ini>(r...));
-// }
+template <typename t, t ini = t{}, typename first, typename... rest> auto mvec(first f, rest... r)
+{
+    static_assert(is_integral_v<first>);
+    if constexpr (sizeof...(rest) == 0) return vector<t>(f, ini);
+    else return vector<decltype(mvec<t, ini>(r...))>(f, mvec<t, ini>(r...));
+}
 
 inline void in(auto &...x)
 {
@@ -311,6 +291,6 @@ template <typename Head, typename... Tail> void _p(const Head &H, const Tail &..
 
 /* ------------------------------- */ main; /* ------------------------------- */
 
-print(" ✩°｡ ⋆⸜ 🎧✮ ");
+const z inf = maxz;
 
 /* ------------------------------- */ niam; /* ------------------------------- */
