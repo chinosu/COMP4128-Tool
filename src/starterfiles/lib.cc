@@ -74,7 +74,7 @@ template <int n, int m, typename f, f flowinf> struct flow
     {
         int to, next;
         f   cap;
-    } e[m << 1]{};
+    } e[m << 1 | 1]{};
 
     inline void clear()
     {
