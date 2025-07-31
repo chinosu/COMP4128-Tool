@@ -1,5 +1,6 @@
 pub const lib_src = "./lib.cc";
 pub const main_src = "./main.cc";
+pub const debugprint_src = "./debugprint.hh";
 pub const main_exe = "./exe_main";
 pub const tests = "./tests.txt";
 pub const gen = "./gen.zig";

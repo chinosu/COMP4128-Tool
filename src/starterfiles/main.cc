@@ -3,6 +3,357 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+template <typename t, auto s> struct dsu
+{
+    t parent[s];
+    t rank[s];
+
+    constexpr dsu()
+    {
+        iota(parent, parent + s, 0);
+        fill(rank, rank + s, 1);
+    }
+
+    inline int find(t i)
+    {
+        while (parent[i] != i) i = parent[i] = parent[parent[i]];
+        return i;
+    }
+
+    inline bool unite(t i, t j)
+    {
+        t pi = find(i), pj = find(j);
+        if (pi == pj) return false;
+        if (rank[pi] < rank[pj]) swap(pi, pj);
+        parent[pj]  = pi;
+        rank[pi]   += pj;
+        return true;
+    }
+
+    inline bool same(t i, t j)
+    {
+        return find(i) == find(j);
+    }
+
+    inline int size(t i)
+    {
+        return rank[find(i)];
+    }
+};
+
+template <typename t> struct minque
+{
+    deque<t> q;
+
+    inline void add(t x)
+    {
+        while (q.size() and x < q.back()) q.pop_back();
+        q.emplace_back(x);
+    }
+
+    inline void remove(t x)
+    {
+        if (q.size() and x == q.front()) q.pop_front();
+    }
+};
+
+template <typename t, auto n> inline auto compress(t (&at)[n], t (&revert)[n])
+{
+    copy(at, at + n, revert);
+    sort(revert, revert + n);
+    int len = unique(revert, revert + n) - revert;
+    for (int i = 0; i < n; i += 1) at[i] = lower_bound(revert, revert + len, at[i]) - revert;
+    return len;
+}
+
+template <int n, int m, typename f, f flowinf> struct flow
+{
+    int tot = 1, s = 0, t = 0;
+    int hd[n]{}, cur[n]{}, dis[n]{};
+    int q[n]{}, qhd = 0, qtl = 0;
+
+    struct
+    {
+        int to, next;
+        f   cap;
+    } e[m << 1 | 1]{};
+
+    inline void clear()
+    {
+        tot = 1;
+        fill(hd, hd + n, 0);
+    }
+
+    inline void add(int u, int v, f w)
+    {
+        e[++tot].next = hd[u], hd[u] = tot, e[tot].to = v, e[tot].cap = w;
+        e[++tot].next = hd[v], hd[v] = tot, e[tot].to = u, e[tot].cap = 0;
+    }
+
+    inline bool bfs()
+    {
+        copy(hd, hd + n, cur);
+        fill(dis, dis + n, -1);
+        q[qhd = qtl = 1] = s;
+        dis[s]           = 0;
+        while (qhd <= qtl)
+        {
+            int u = q[qhd++];
+            for (int i = hd[u], v; i; i = e[i].next)
+            {
+                if (dis[v = e[i].to] == -1 and e[i].cap != 0)
+                {
+                    dis[v]   = dis[u] + 1;
+                    q[++qtl] = v;
+                }
+            }
+        }
+        return dis[t] != -1;
+    }
+
+    f dfs(int u, f rem)
+    {
+        if (u == t) return rem;
+        f flow = 0;
+        for (int i = cur[u], v; i and rem; i = e[i].next)
+        {
+            cur[u] = i;
+            v      = e[i].to;
+            f nw   = min(rem, e[i].cap);
+            if (nw != 0 and dis[v] == dis[u] + 1)
+            {
+                int ret       = dfs(v, nw);
+                flow         += ret;
+                rem          -= ret;
+                e[i].cap     -= ret;
+                e[i ^ 1].cap += ret;
+            }
+        }
+        if (flow == 0) dis[u] = -1;
+        return flow;
+    }
+
+    f dinic(int source, int sink)
+    {
+        s = source, t = sink;
+        f flow = 0;
+        while (bfs()) flow += dfs(s, flowinf);
+        return flow;
+    }
+};
+
+constexpr inline bool isprime(auto x)
+{
+    if (x <= 1) return false;
+    for (auto f = 2; f * f <= x; f += 1)
+    {
+        if (x % f == 0) return false;
+    }
+    return true;
+}
+
+template <typename t, auto n> struct primesieve
+{
+    t lp[n + 1]{};
+
+    constexpr primesieve()
+    {
+        for (auto i = 2; i <= n; i += 1) lp[i] = i;
+        for (auto i = 2; i * i <= n; i += 1)
+        {
+            if (lp[i] != i) continue;
+            for (int j = i * i; j <= n; j += i)
+            {
+                if (lp[j] == j) lp[j] = i;
+            }
+        }
+    }
+
+    constexpr inline pair<vector<t>, vector<t>> factors(t x)
+    {
+        pair<vector<t>, vector<t>> ret;
+        while (x)
+        {
+            if (ret.first.size() and ret.first.back() == lp[x]) ret.second.back() += 1;
+            else ret.first.emplace_back(lp[x]), ret.second.emplace_back(1);
+            x /= lp[x];
+        }
+        return ret;
+    }
+};
+
+template <typename t, auto m> struct mod
+{
+    t val;
+
+    constexpr mod(t v) : val((v % m + m) % m)
+    {
+    }
+
+    constexpr inline auto operator+(const mod &o) const
+    {
+        return mod(val + o.val);
+    }
+
+    constexpr inline auto operator*(const mod &o) const
+    {
+        return mod(val * o.val);
+    }
+
+    constexpr inline auto operator+=(const mod &o)
+    {
+        val += o.val, val %= m;
+        return *this;
+    }
+
+    constexpr inline auto operator*=(const mod &o)
+    {
+        val *= o.val, val %= m;
+        return *this;
+    }
+
+    constexpr inline auto pow(auto p) const
+    {
+        mod x  = *this, ret;
+        ret   += 1;
+        while (0 < p)
+        {
+            if (p & 1) ret *= x;
+            x *= x;
+            p /= 2;
+        }
+        return ret;
+    }
+
+    constexpr inline auto inv() const
+    {
+        static_assert(isprime(m));
+        return pow(m - 2);
+    }
+
+    constexpr inline operator t() const
+    {
+        return val;
+    }
+};
+
+template <typename t> struct matrix
+{
+    int               n, m;
+    vector<vector<t>> mat;
+
+    matrix(int r, int c, t val = 0) : n(r), m(c), mat(r, vector<t>(c, val))
+    {
+    }
+
+    inline vector<t> &operator[](size_t i)
+    {
+        return mat[i];
+    }
+
+    inline const vector<t> &operator[](size_t i) const
+    {
+        return mat[i];
+    }
+
+    static inline matrix identity(int n)
+    {
+        matrix m(n, n);
+        for (int i = 0; i < n; ++i) m[i][i] = 1;
+        return m;
+    }
+
+    friend inline matrix operator*(const matrix &a, const matrix &b)
+    {
+        assert(a.m == b.n);
+        matrix c(a.n, b.m);
+        for (auto i = 0; i < a.n; ++i)
+        {
+            for (auto k = 0; k < a.m; ++k)
+            {
+                auto aik = a[i][k];
+                if (!aik) continue;
+                for (auto j = 0; j < b.m; ++j)
+                {
+                    c.mat[i][j] += a[i][k] * b[k][j];
+                }
+            }
+        }
+        return c;
+    }
+
+    inline matrix pow(auto exp) const
+    {
+        assert(n == m);
+        matrix a    = identity(n);
+        matrix base = *this;
+        while (exp > 0)
+        {
+            if (exp & 1) a = a * base;
+            base   = base * base;
+            exp  >>= 1;
+        }
+        return a;
+    }
+};
+
+template <typename t, t ini = t{}, typename first, typename... rest> auto mvec(first f, rest... r)
+{
+    static_assert(is_integral_v<first>);
+    if constexpr (sizeof...(rest) == 0) return vector<t>(f, ini);
+    else return vector<decltype(mvec<t, ini>(r...))>(f, mvec<t, ini>(r...));
+}
+
+inline void in(auto &...x)
+{
+    ((cin >> x), ...);
+}
+
+inline void out(auto... x)
+{
+    ((cout << x), ...);
+}
+
+inline void err(auto... x)
+{
+    ((cerr << x), ...);
+}
+
+inline void imax(auto &a, const auto &b)
+{
+    a = max(a, b);
+}
+
+inline void imin(auto &a, const auto &b)
+{
+    a = min(a, b);
+}
+
+inline bool wthn(const auto left, const auto mid, const auto right)
+{
+    return left <= mid and mid < right;
+}
+
+template <typename t> inline constexpr decltype(auto) logceil(t x)
+{
+    return bit_width(x - 1);
+}
+
+constexpr unsigned long long operator""_K(unsigned long long x)
+{
+    return x * 1'000;
+}
+
+constexpr unsigned long long operator""_M(unsigned long long x)
+{
+    return x * 1'000'000;
+}
+
+constexpr unsigned long long operator""_B(unsigned long long x)
+{
+    return x * 1'000'000'000;
+}
+
 // #include <ext/pb_ds/assoc_container.hpp>
 // #include <ext/pb_ds/hash_policy.hpp>
 // #include <ext/pb_ds/list_update_policy.hpp>
@@ -50,235 +401,7 @@ const char nl                    = '\n';
     __VA_ARGS__;                                                                                                       \
     in(__VA_ARGS__)
 
-template <typename t, t ini = t{}, typename first, typename... rest> auto mvec(first f, rest... r)
-{
-    static_assert(is_integral_v<first>);
-    if constexpr (sizeof...(rest) == 0) return vector<t>(f, ini);
-    else return vector<decltype(mvec<t, ini>(r...))>(f, mvec<t, ini>(r...));
-}
-
-inline void in(auto &...x)
-{
-    ((cin >> x), ...);
-}
-
-inline void out(auto... x)
-{
-    ((cout << x), ...);
-}
-
-inline void err(auto... x)
-{
-    ((cerr << x), ...);
-}
-
-inline void imax(auto &a, const auto &b)
-{
-    a = max(a, b);
-}
-
-inline void imin(auto &a, const auto &b)
-{
-    a = min(a, b);
-}
-
-inline void iamod(auto &a, const auto &b, const auto &m)
-{
-    a = (a + b) % m;
-}
-
-inline bool wthn(const auto left, const auto mid, const auto right)
-{
-    return left <= mid and mid < right;
-}
-
-template <typename t> inline constexpr decltype(auto) logceil(t x)
-{
-    return bit_width(x - 1);
-}
-
-constexpr unsigned long long operator""_K(unsigned long long x)
-{
-    return x * 1'000;
-}
-
-constexpr unsigned long long operator""_M(unsigned long long x)
-{
-    return x * 1'000'000;
-}
-
-constexpr unsigned long long operator""_B(unsigned long long x)
-{
-    return x * 1'000'000'000;
-}
-
-#ifdef __DEBUG__
-void __p(int x)
-{
-    if (x == numeric_limits<int>::max()) cerr << "∞";
-    else if (x == -numeric_limits<int>::max()) cerr << "-∞";
-    else cerr << x;
-}
-
-void __p(long x)
-{
-    cerr << x;
-}
-
-void __p(long long x)
-{
-    if (x == numeric_limits<long long>::max()) cerr << "∞";
-    else if (x == -numeric_limits<long long>::max()) cerr << "-∞";
-    else cerr << x;
-}
-
-void __p(unsigned x)
-{
-    cerr << x;
-}
-
-void __p(unsigned long x)
-{
-    cerr << x;
-}
-
-void __p(unsigned long long x)
-{
-    cerr << x;
-}
-
-void __p(float x)
-{
-    cerr << x;
-}
-
-void __p(double x)
-{
-    cerr << x;
-}
-
-void __p(long double x)
-{
-    cerr << x;
-}
-
-void __p(char x)
-{
-    cerr << '\'' << x << '\'';
-}
-
-void __p(const char *x)
-{
-    cerr << '"' << x << '"';
-}
-
-void __p(const string &x)
-{
-    cerr << '"' << x << '"';
-}
-
-void __p(bool x)
-{
-    cerr << (x ? "true" : "false");
-}
-
-template <typename A> void __p(const A &x);
-template <typename A, typename B> void __p(const pair<A, B> &p);
-template <typename... A> void __p(const tuple<A...> &t);
-template <typename T> void __p(stack<T> s);
-template <typename T> void __p(queue<T> q);
-template <typename T, typename... U> void __p(priority_queue<T, U...> q);
-template <size_t N> void __p(bitset<N> q);
-
-template <typename A> void __p(const A &x)
-{
-    auto first = true;
-    cerr << '[';
-    for (const ref i : x)
-    {
-        cerr << (first ? "" : ","), __p(i);
-        first = false;
-    }
-    cerr << ']';
-}
-
-template <typename A, typename B> void __p(const pair<A, B> &p)
-{
-    cerr << '(';
-    __p(p.first);
-    cerr << ",";
-    __p(p.second);
-    cerr << ')';
-}
-
-template <typename... A> void __p(const tuple<A...> &t)
-{
-    auto first = true;
-    cerr << '(';
-    apply([&first](const auto &...args) { ((cerr << (first ? "" : ","), __p(args), first = false), ...); }, t);
-    cerr << ')';
-}
-
-template <typename T> void __p(stack<T> s)
-{
-    vec<T> v;
-    while (!s.empty())
-    {
-        T t = s.top();
-        v.push_back(t);
-        s.pop();
-    }
-    reverse(all(v));
-    __p(v);
-}
-
-template <typename T> void __p(queue<T> q)
-{
-    vec<T> v;
-    while (!q.empty())
-    {
-        T t = q.front();
-        v.push_back(t);
-        q.pop();
-    }
-    __p(v);
-}
-
-template <typename T, typename... U> void __p(priority_queue<T, U...> q)
-{
-    vec<T> v;
-    while (!q.empty())
-    {
-        T t = q.top();
-        v.push_back(t);
-        q.pop();
-    }
-    __p(v);
-}
-
-template <size_t N> void __p(bitset<N> q)
-{
-    cerr << q;
-}
-
-void _p()
-{
-    cerr << "]\n";
-}
-
-template <typename Head, typename... Tail> void _p(const Head &H, const Tail &...T)
-{
-    __p(H);
-    if (sizeof...(T)) cerr << ", ";
-    _p(T...);
-}
-
-#define print(...)                                                                                                     \
-    do {                                                                                                               \
-        cerr << "" << __LINE__ << " => [" << #__VA_ARGS__ << "] = [";                                                  \
-        _p(__VA_ARGS__);                                                                                               \
-    } while (0)
-#else
+#ifndef print
 #define print(...)
 #endif
 

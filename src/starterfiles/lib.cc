@@ -1,7 +1,9 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-template <typename t, int s> struct dsu
+#define roundup(val, by) (((val) + (by) - 1) / (by) * (by))
+
+template <typename t, auto s> struct dsu
 {
     t parent[s];
     t rank[s];
@@ -55,7 +57,7 @@ template <typename t> struct minque
     }
 };
 
-template <typename t, int n> inline auto compress(t (&at)[n], t (&revert)[n])
+template <typename t, auto n> inline auto compress(t (&at)[n], t (&revert)[n])
 {
     copy(at, at + n, revert);
     sort(revert, revert + n);
@@ -137,5 +139,160 @@ template <int n, int m, typename f, f flowinf> struct flow
         f flow = 0;
         while (bfs()) flow += dfs(s, flowinf);
         return flow;
+    }
+};
+
+constexpr inline bool isprime(auto x)
+{
+    if (x <= 1) return false;
+    for (auto f = 2; f * f <= x; f += 1)
+    {
+        if (x % f == 0) return false;
+    }
+    return true;
+}
+
+template <typename t, auto n> struct primesieve
+{
+    t lp[n + 1]{};
+
+    constexpr primesieve()
+    {
+        for (auto i = 2; i <= n; i += 1) lp[i] = i;
+        for (auto i = 2; i * i <= n; i += 1)
+        {
+            if (lp[i] != i) continue;
+            for (int j = i * i; j <= n; j += i)
+            {
+                if (lp[j] == j) lp[j] = i;
+            }
+        }
+    }
+
+    constexpr inline pair<vector<t>, vector<t>> factors(t x)
+    {
+        pair<vector<t>, vector<t>> ret;
+        while (x)
+        {
+            if (ret.first.size() and ret.first.back() == lp[x]) ret.second.back() += 1;
+            else ret.first.emplace_back(lp[x]), ret.second.emplace_back(1);
+            x /= lp[x];
+        }
+        return ret;
+    }
+};
+
+template <typename t, auto m> struct mod
+{
+    t val;
+
+    constexpr mod(t v) : val((v % m + m) % m)
+    {
+    }
+
+    constexpr inline auto operator+(const mod &o) const
+    {
+        return mod(val + o.val);
+    }
+
+    constexpr inline auto operator*(const mod &o) const
+    {
+        return mod(val * o.val);
+    }
+
+    constexpr inline auto operator+=(const mod &o)
+    {
+        val += o.val, val %= m;
+        return *this;
+    }
+
+    constexpr inline auto operator*=(const mod &o)
+    {
+        val *= o.val, val %= m;
+        return *this;
+    }
+
+    constexpr inline auto pow(auto p) const
+    {
+        mod x  = *this, ret;
+        ret   += 1;
+        while (0 < p)
+        {
+            if (p & 1) ret *= x;
+            x *= x;
+            p /= 2;
+        }
+        return ret;
+    }
+
+    constexpr inline auto inv() const
+    {
+        static_assert(isprime(m));
+        return pow(m - 2);
+    }
+
+    constexpr inline operator t() const
+    {
+        return val;
+    }
+};
+
+template <typename t> struct matrix
+{
+    int               n, m;
+    vector<vector<t>> mat;
+
+    matrix(int r, int c, t val = 0) : n(r), m(c), mat(r, vector<t>(c, val))
+    {
+    }
+
+    inline vector<t> &operator[](size_t i)
+    {
+        return mat[i];
+    }
+
+    inline const vector<t> &operator[](size_t i) const
+    {
+        return mat[i];
+    }
+
+    static inline matrix identity(int n)
+    {
+        matrix m(n, n);
+        for (int i = 0; i < n; ++i) m[i][i] = 1;
+        return m;
+    }
+
+    friend inline matrix operator*(const matrix &a, const matrix &b)
+    {
+        assert(a.m == b.n);
+        matrix c(a.n, b.m);
+        for (auto i = 0; i < a.n; ++i)
+        {
+            for (auto k = 0; k < a.m; ++k)
+            {
+                auto aik = a[i][k];
+                if (!aik) continue;
+                for (auto j = 0; j < b.m; ++j)
+                {
+                    c.mat[i][j] += a[i][k] * b[k][j];
+                }
+            }
+        }
+        return c;
+    }
+
+    inline matrix pow(auto exp) const
+    {
+        assert(n == m);
+        matrix a    = identity(n);
+        matrix base = *this;
+        while (exp > 0)
+        {
+            if (exp & 1) a = a * base;
+            base   = base * base;
+            exp  >>= 1;
+        }
+        return a;
     }
 };

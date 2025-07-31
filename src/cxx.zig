@@ -1,4 +1,9 @@
 pub fn spawn(alloc: mem.Allocator, src: []const u8, exe: []const u8, opts: enum { fast, debug }) !Child {
+    var cwd = fs.cwd();
+    const f = try cwd.createFile(path.debugprint_src, .{});
+    defer f.close();
+    try f.writeAll(@embedFile("./starterfiles/debugprint.hh"));
+
     var child = switch (opts) {
         .fast => Child.init(&.{
             "g++-15",
@@ -15,6 +20,8 @@ pub fn spawn(alloc: mem.Allocator, src: []const u8, exe: []const u8, opts: enum 
             exe,
             "-std=gnu++20",
             "-O2",
+            "-include",
+            path.debugprint_src,
             "-W" ++ "float-equal",
             "-W" ++ "logical-op",
             // "-W" ++ "shadow",
@@ -24,7 +31,7 @@ pub fn spawn(alloc: mem.Allocator, src: []const u8, exe: []const u8, opts: enum 
             "-D" ++ "_GLIBCXX_DEBUG",
             "-D" ++ "_GLIBCXX_DEBUG_PEDANTIC",
             "-D" ++ "_FORTIFY_SOURCE=2",
-            "-D" ++ "__DEBUG__",
+            "-D" ++ "DEBUGPRINT",
         }, alloc),
     };
     child.stdin_behavior = .Close;
@@ -35,6 +42,9 @@ pub fn spawn(alloc: mem.Allocator, src: []const u8, exe: []const u8, opts: enum 
 }
 
 pub fn wait(alloc: mem.Allocator, child: *Child, src: []const u8) !void {
+    var cwd = fs.cwd();
+    defer cwd.deleteFile(path.debugprint_src) catch {};
+
     const buf = try alloc.alloc(u8, 8192);
     defer alloc.free(buf);
     const err = buf[0..try child.stderr.?.readAll(buf)];
@@ -53,6 +63,8 @@ pub fn wait(alloc: mem.Allocator, child: *Child, src: []const u8) !void {
     }
 }
 
+const path = @import("path.zig");
 const Child = @import("std").process.Child;
 const log = @import("std").log;
 const mem = @import("std").mem;
+const fs = @import("std").fs;

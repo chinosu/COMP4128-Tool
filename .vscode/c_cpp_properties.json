@@ -6,7 +6,7 @@
                 "${workspaceFolder}/**"
             ],
             "defines": [
-                "__DEBUG__"
+                "DEBUGPRINT"
             ],
             "compilerPath": "/opt/homebrew/bin/g++-15",
             "cStandard": "c17",
