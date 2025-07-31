@@ -48,29 +48,6 @@ pub fn ini(name: []const u8) !void {
         },
         else => return e,
     };
-    // _ = subdir.statFile(path.clang_format) catch |e| switch (e) {
-    //     error.FileNotFound => {
-    //         const f = try subdir.createFile(path.clang_format, .{});
-    //         defer f.close();
-    //         try f.writeAll(@embedFile("../starterfiles/.clang-format"));
-    //     },
-    //     else => return e,
-    // };
-
-    // subdir.makeDir(path.vscode_dir) catch |e| switch (e) {
-    //     error.PathAlreadyExists => {},
-    //     else => return e,
-    // };
-    // var vscode_dir = try subdir.openDir(path.vscode_dir, .{});
-    // defer vscode_dir.close();
-    // _ = vscode_dir.statFile(path.src) catch |e| switch (e) {
-    //     error.FileNotFound => {
-    //         const f = try vscode_dir.createFile(path.c_cpp_properties, .{});
-    //         defer f.close();
-    //         try f.writeAll(@embedFile("../starterfiles/c_cpp_properties.json"));
-    //     },
-    //     else => return e,
-    // };
 }
 
 pub fn ini_code(name: []const u8, alloc: Allocator) !void {
