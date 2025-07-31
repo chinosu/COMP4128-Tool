@@ -297,6 +297,25 @@ template <typename t> struct matrix
     }
 };
 
+template <auto n> struct directed_cycle
+{
+    const char unseen = 0, active = 1, complete = 2;
+    char       status[n]{};
+
+    auto has_cycle(auto u, auto edges)
+    {
+        fill(status, status + n, 0);
+        if (status[u] != unseen) return false;
+        status[u] = active;
+        for (auto v : edges)
+        {
+            if (status[v] == active or has_cycle(v)) return true;
+        }
+        status[u] = complete;
+        return false;
+    }
+};
+
 template <typename t, t ini = t{}, typename first, typename... rest> auto mvec(first f, rest... r)
 {
     static_assert(is_integral_v<first>);
@@ -388,7 +407,7 @@ const char nl                    = '\n';
 #define all(x)              x.begin(), x.end()
 #define ascz(i, stop)       for (z i = 0; i < stop; i += 1)
 #define asc(i, start, stop) for (z i = start; i < stop; i += 1)
-#define dsc(i, start, stop) for (z i = start; stop < i; i - = 1)
+#define dsc(i, start, stop) for (z i = start; stop < i; i -= 1)
 #define guard(cond)         if (!(cond))
 #define main                                                                                                           \
     int main()                                                                                                         \
