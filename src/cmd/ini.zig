@@ -16,14 +16,14 @@ pub fn ini(name: []const u8) !void {
         },
         else => return e,
     };
-    _ = subdir.statFile(path.lib_src) catch |e| switch (e) {
-        error.FileNotFound => {
-            const f = try subdir.createFile(path.lib_src, .{});
-            defer f.close();
-            try f.writeAll(@embedFile("../starterfiles/lib.cc"));
-        },
-        else => return e,
-    };
+    // _ = subdir.statFile(path.lib_src) catch |e| switch (e) {
+    //     error.FileNotFound => {
+    //         const f = try subdir.createFile(path.lib_src, .{});
+    //         defer f.close();
+    //         try f.writeAll(@embedFile("../starterfiles/lib.cc"));
+    //     },
+    //     else => return e,
+    // };
     _ = subdir.statFile(path.tests) catch |e| switch (e) {
         error.FileNotFound => {
             const f = try subdir.createFile(path.tests, .{});
