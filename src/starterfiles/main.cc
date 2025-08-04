@@ -316,6 +316,49 @@ template <auto n> struct directed_cycle
     }
 };
 
+template <typename t, auto n> struct segtree
+{
+    t a[4 * n]{};
+
+    void build(auto a0, auto merge, int u = 0, int l = 0, int r = n - 1)
+    {
+        if (l == r)
+        {
+            a[u] = a0[l];
+            return;
+        }
+        int m = (l + r) >> 1;
+        build(a0, merge, (u << 1) + 1, l, m);
+        build(a0, merge, (u << 1) + 2, m + 1, r);
+        merge(/* ref */ a[u], a[(u << 1) + 1], a[(u << 1) + 2]);
+    }
+
+    void set(int i, t x, auto merge, int u = 0, int l = 0, int r = n - 1)
+    {
+        if (l == r)
+        {
+            a[u] = x;
+            return;
+        }
+        int m = (l + r) >> 1;
+        if (i <= m) set(i, x, merge, (u << 1) + 1, l, m);
+        else set(i, x, merge, (u << 1) + 2, m + 1, r);
+        merge(/* ref */ a[u], a[(u << 1) + 1], a[(u << 1) + 2]);
+    }
+
+    void get(auto &ret, int i, int j, auto acc, int u = 0, int l = 0, int r = n - 1)
+    {
+        if (i <= l and r <= j)
+        {
+            acc(/* ref */ ret, a[u]);
+            return;
+        }
+        int m = (l + r) >> 1;
+        if (i <= m) get(ret, i, j, acc, (u << 1) + 1, l, m);
+        if (m < j) get(ret, i, j, acc, (u << 1) + 2, m + 1, r);
+    }
+};
+
 template <typename t, t ini = t{}, typename first, typename... rest> auto mvec(first f, rest... r)
 {
     static_assert(is_integral_v<first>);
@@ -413,7 +456,7 @@ const char nl                    = '\n';
     int main()                                                                                                         \
     {                                                                                                                  \
         cin.tie(nullptr);                                                                                              \
-        cin.sync_with_stdio(false);                                                                                    \
+        ios::sync_with_stdio(false);                                                                                   \
         cout << fixed << setprecision(9);
 #define niam }
 #define scan(...)                                                                                                      \
