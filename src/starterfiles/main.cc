@@ -432,7 +432,6 @@ using tz                         = tuple<z, z, z>;
 const z maxz                     = numeric_limits<z>::max();
 const z nil                      = 0;
 using str                        = string;
-template <typename t> using gt   = greater<t>;
 template <typename t> using vec  = vector<t>;
 template <typename t> using heap = priority_queue<t, vec<t>, gt<t>>;
 using vz                         = vec<z>;
@@ -440,25 +439,15 @@ using vvz                        = vec<vz>;
 using vvvz                       = vec<vvz>;
 using vpz                        = vec<pz>;
 using vtz                        = vec<tz>;
-template <typename t> using mset = multiset<t>;
 const char sp                    = ' ';
 const char nl                    = '\n';
 
 #define var                 auto
 #define ref                 auto &
 #define perm                static constinit
-#define all(x)              x.begin(), x.end()
 #define ascz(i, stop)       for (z i = 0; i < stop; i += 1)
 #define asc(i, start, stop) for (z i = start; i < stop; i += 1)
 #define dsc(i, start, stop) for (z i = start; stop < i; i -= 1)
-#define guard(cond)         if (!(cond))
-#define main                                                                                                           \
-    int main()                                                                                                         \
-    {                                                                                                                  \
-        cin.tie(nullptr);                                                                                              \
-        ios::sync_with_stdio(false);                                                                                   \
-        cout << fixed << setprecision(9);
-#define niam }
 #define scan(...)                                                                                                      \
     __VA_ARGS__;                                                                                                       \
     in(__VA_ARGS__)
@@ -467,8 +456,10 @@ const char nl                    = '\n';
 #define print(...)
 #endif
 
-/* ------------------------------- */ main; /* ------------------------------- */
-
-const z inf = maxz;
-
-/* ------------------------------- */ niam; /* ------------------------------- */
+int main()
+{
+    cin.tie(nullptr);
+    ios::sync_with_stdio(false);
+    cout << fixed << setprecision(9);
+    const z inf = maxz;
+}
