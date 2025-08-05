@@ -320,7 +320,7 @@ template <typename t, auto n> struct segtree
 {
     t a[4 * n]{};
 
-    void build(auto a0, auto merge, int u = 0, int l = 0, int r = n - 1)
+    void build(auto a0, auto comb, int u = 0, int l = 0, int r = n - 1)
     {
         if (l == r)
         {
@@ -328,12 +328,12 @@ template <typename t, auto n> struct segtree
             return;
         }
         int m = (l + r) >> 1;
-        build(a0, merge, (u << 1) + 1, l, m);
-        build(a0, merge, (u << 1) + 2, m + 1, r);
-        merge(/* ref */ a[u], a[(u << 1) + 1], a[(u << 1) + 2]);
+        build(a0, comb, (u << 1) + 1, l, m);
+        build(a0, comb, (u << 1) + 2, m + 1, r);
+        comb(/* ref */ a[u], a[(u << 1) + 1], a[(u << 1) + 2]);
     }
 
-    void set(int i, t x, auto merge, int u = 0, int l = 0, int r = n - 1)
+    void set(int i, t x, auto comb, int u = 0, int l = 0, int r = n - 1)
     {
         if (l == r)
         {
@@ -341,9 +341,9 @@ template <typename t, auto n> struct segtree
             return;
         }
         int m = (l + r) >> 1;
-        if (i <= m) set(i, x, merge, (u << 1) + 1, l, m);
-        else set(i, x, merge, (u << 1) + 2, m + 1, r);
-        merge(/* ref */ a[u], a[(u << 1) + 1], a[(u << 1) + 2]);
+        if (i <= m) set(i, x, comb, (u << 1) + 1, l, m);
+        else set(i, x, comb, (u << 1) + 2, m + 1, r);
+        comb(/* ref */ a[u], a[(u << 1) + 1], a[(u << 1) + 2]);
     }
 
     void get(auto &ret, int i, int j, auto acc, int u = 0, int l = 0, int r = n - 1)
@@ -433,7 +433,7 @@ const z maxz                     = numeric_limits<z>::max();
 const z nil                      = 0;
 using str                        = string;
 template <typename t> using vec  = vector<t>;
-template <typename t> using heap = priority_queue<t, vec<t>, gt<t>>;
+template <typename t> using heap = priority_queue<t, vec<t>, greater<t>>;
 using vz                         = vec<z>;
 using vvz                        = vec<vz>;
 using vvvz                       = vec<vvz>;
