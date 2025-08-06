@@ -443,12 +443,14 @@ template <typename t> struct pos
         int         s = 0;
         for (int i = 0; i < p.size(); i += 1)
         {
+            // change `<= 0` to `< 0` to keep collinear points
             while (s + 2 <= v.size() and orient(v[v.size() - 2], v[v.size() - 1], p[i]) <= 0) v.pop_back();
             v.push_back(p[i]);
         }
         s = v.size() - 1;
         for (int i = p.size() - 2; 0 <= i; i -= 1)
         {
+            // change `<= 0` to `< 0` to keep collinear points
             while (s + 2 <= v.size() and orient(v[v.size() - 2], v[v.size() - 1], p[i]) <= 0) v.pop_back();
             v.push_back(p[i]);
         }
