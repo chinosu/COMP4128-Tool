@@ -14,13 +14,13 @@ template <typename t, auto s> struct dsu
         fill(rank, rank + s, 1);
     }
 
-    inline int find(t i)
+    int find(t i)
     {
         while (parent[i] != i) i = parent[i] = parent[parent[i]];
         return i;
     }
 
-    inline bool unite(t i, t j)
+    bool unite(t i, t j)
     {
         t pi = find(i), pj = find(j);
         if (pi == pj) return false;
@@ -30,12 +30,12 @@ template <typename t, auto s> struct dsu
         return true;
     }
 
-    inline bool same(t i, t j)
+    bool same(t i, t j)
     {
         return find(i) == find(j);
     }
 
-    inline int size(t i)
+    int size(t i)
     {
         return rank[find(i)];
     }
@@ -45,19 +45,19 @@ template <typename t> struct minque
 {
     deque<t> q;
 
-    inline void add(t x)
+    void add(t x)
     {
         while (q.size() and x < q.back()) q.pop_back();
         q.emplace_back(x);
     }
 
-    inline void remove(t x)
+    void remove(t x)
     {
         if (q.size() and x == q.front()) q.pop_front();
     }
 };
 
-template <typename t, auto n> inline auto compress(t (&at)[n], t (&revert)[n])
+template <typename t, auto n> auto compress(t (&at)[n], t (&revert)[n])
 {
     copy(at, at + n, revert);
     sort(revert, revert + n);
@@ -78,19 +78,19 @@ template <int n, int m, typename f, f flowinf> struct flow
         f   cap;
     } e[m << 1 | 1]{};
 
-    inline void clear()
+    void clear()
     {
         tot = 1;
         fill(hd, hd + n, 0);
     }
 
-    inline void add(int u, int v, f w)
+    void add(int u, int v, f w)
     {
         e[++tot].next = hd[u], hd[u] = tot, e[tot].to = v, e[tot].cap = w;
         e[++tot].next = hd[v], hd[v] = tot, e[tot].to = u, e[tot].cap = 0;
     }
 
-    inline bool bfs()
+    bool bfs()
     {
         copy(hd, hd + n, cur);
         fill(dis, dis + n, -1);
@@ -142,7 +142,7 @@ template <int n, int m, typename f, f flowinf> struct flow
     }
 };
 
-constexpr inline bool isprime(auto x)
+constexpr bool isprime(auto x)
 {
     if (x <= 1) return false;
     for (auto f = 2; f * f <= x; f += 1)
@@ -169,7 +169,7 @@ template <typename t, auto n> struct primesieve
         }
     }
 
-    constexpr inline pair<vector<t>, vector<t>> factors(t x)
+    constexpr pair<vector<t>, vector<t>> factors(t x)
     {
         pair<vector<t>, vector<t>> ret;
         while (x)
@@ -190,29 +190,29 @@ template <typename t, auto m> struct mod
     {
     }
 
-    constexpr inline auto operator+(const mod &o) const
+    constexpr auto operator+(const mod &o) const
     {
         return mod(val + o.val);
     }
 
-    constexpr inline auto operator*(const mod &o) const
+    constexpr auto operator*(const mod &o) const
     {
         return mod(val * o.val);
     }
 
-    constexpr inline auto operator+=(const mod &o)
+    constexpr auto operator+=(const mod &o)
     {
         val += o.val, val %= m;
         return *this;
     }
 
-    constexpr inline auto operator*=(const mod &o)
+    constexpr auto operator*=(const mod &o)
     {
         val *= o.val, val %= m;
         return *this;
     }
 
-    constexpr inline auto pow(auto p) const
+    constexpr auto pow(auto p) const
     {
         mod x  = *this, ret;
         ret   += 1;
@@ -225,13 +225,13 @@ template <typename t, auto m> struct mod
         return ret;
     }
 
-    constexpr inline auto inv() const
+    constexpr auto inv() const
     {
         static_assert(isprime(m));
         return pow(m - 2);
     }
 
-    constexpr inline operator t() const
+    constexpr operator t() const
     {
         return val;
     }
@@ -246,24 +246,24 @@ template <typename t> struct matrix
     {
     }
 
-    inline vector<t> &operator[](size_t i)
+    vector<t> &operator[](size_t i)
     {
         return mat[i];
     }
 
-    inline const vector<t> &operator[](size_t i) const
+    const vector<t> &operator[](size_t i) const
     {
         return mat[i];
     }
 
-    static inline matrix identity(int n)
+    static matrix identity(int n)
     {
         matrix m(n, n);
         for (int i = 0; i < n; ++i) m[i][i] = 1;
         return m;
     }
 
-    friend inline matrix operator*(const matrix &a, const matrix &b)
+    friend matrix operator*(const matrix &a, const matrix &b)
     {
         assert(a.m == b.n);
         matrix c(a.n, b.m);
@@ -282,7 +282,7 @@ template <typename t> struct matrix
         return c;
     }
 
-    inline matrix pow(auto exp) const
+    matrix pow(auto exp) const
     {
         assert(n == m);
         matrix a    = identity(n);
@@ -359,6 +359,106 @@ template <typename t, auto n> struct segtree
     }
 };
 
+const double eps = 1e-9;
+
+template <integral t> bool zero(t x)
+{
+    return x == 0;
+}
+
+template <floating_point t> bool zero(t x)
+{
+    return fabs(x) <= eps;
+}
+
+template <typename t> struct pos
+{
+    t x;
+    t y;
+
+    pos operator()(pos u)
+    {
+        return pos(u.x - x, u.y - y);
+    }
+
+    friend pos operator-(pos u, pos v)
+    {
+        return pos(u.x - v.x, u.y - v.y);
+    }
+
+    friend t operator*(pos u)
+    {
+        return sqrt(pow(u.x, 2) + pow(u.y, 2));
+    }
+
+    friend t operator*(pos u, pos v)
+    {
+        return u.x * v.y - u.y * v.x;
+    }
+
+    friend int orient(pos u, pos v, pos w)
+    {
+        auto c = u(v) * u(w);
+        if (zero(c)) return 0;
+        if (c > 0) return 1;
+        if (c < 0) return -1;
+        return 0;
+    }
+
+    friend bool collinear(pos a, pos b, pos c, pos d)
+    {
+        return zero(a(b) * a(c)) and zero(a(b) * a(d));
+    }
+
+    friend bool intersect(pos a, pos b, pos c, pos d)
+    {
+        if (collinear(a, b, c, d))
+        {
+            return max({*a(b), *a(c), *a(d), *b(c), *b(d), *c(d)}) < *a(b) + *c(d) + eps;
+        }
+        return orient(a, b, c) * orient(a, b, d) <= 0 and orient(c, d, a) * orient(c, d, b) <= 0;
+    }
+
+    friend t area(vector<pos> &p)
+    {
+        // triangle
+        t ret = 0;
+        for (int i = 1; i < p.size() - 1; i += 1) ret += p[0](p[i]) * p[0](p[i + 1]);
+        return ret / 2;
+    }
+
+    friend t _area(vector<pos> &p)
+    {
+        // trapezoid
+        t   ret = 0;
+        int n   = p.size();
+        for (int i = 0; i < n; i += 1) ret += (p[i].y + p[(i + 1) % n].y) * (p[(i + 1) % n].x - p[i].x);
+        return ret / 2;
+    }
+
+    friend vector<pos> convexhull(vector<pos> p)
+    {
+        sort(p.begin(), p.end());
+        vector<pos> v;
+        int         s = 0;
+        for (int i = 0; i < p.size(); i += 1)
+        {
+            while (s + 2 <= v.size() and orient(v[v.size() - 2], v[v.size() - 1], p[i]) <= 0) v.pop_back();
+            v.push_back(p[i]);
+        }
+        s = v.size() - 1;
+        for (int i = p.size() - 2; 0 <= i; i -= 1)
+        {
+            while (s + 2 <= v.size() and orient(v[v.size() - 2], v[v.size() - 1], p[i]) <= 0) v.pop_back();
+            v.push_back(p[i]);
+        }
+        if (v.size()) v.pop_back();
+        return v;
+    }
+
+    auto operator<=>(const pos &o) const = default;
+};
+
 template <typename t, t ini = t{}, typename first, typename... rest> auto mvec(first f, rest... r)
 {
     static_assert(is_integral_v<first>);
@@ -366,54 +466,36 @@ template <typename t, t ini = t{}, typename first, typename... rest> auto mvec(f
     else return vector<decltype(mvec<t, ini>(r...))>(f, mvec<t, ini>(r...));
 }
 
-inline void in(auto &...x)
+void in(auto &...x)
 {
     ((cin >> x), ...);
 }
 
-inline void out(auto... x)
+int out(auto... x)
 {
     ((cout << x), ...);
+    return 0;
 }
 
-inline void err(auto... x)
+int err(auto... x)
 {
     ((cerr << x), ...);
+    return 0;
 }
 
-inline void imax(auto &a, const auto &b)
+void imax(auto &a, const auto &b)
 {
     a = max(a, b);
 }
 
-inline void imin(auto &a, const auto &b)
+void imin(auto &a, const auto &b)
 {
     a = min(a, b);
 }
 
-inline bool wthn(const auto left, const auto mid, const auto right)
+bool wthn(const auto left, const auto mid, const auto right)
 {
     return left <= mid and mid < right;
-}
-
-template <typename t> inline constexpr decltype(auto) logceil(t x)
-{
-    return bit_width(x - 1);
-}
-
-constexpr unsigned long long operator""_K(unsigned long long x)
-{
-    return x * 1'000;
-}
-
-constexpr unsigned long long operator""_M(unsigned long long x)
-{
-    return x * 1'000'000;
-}
-
-constexpr unsigned long long operator""_B(unsigned long long x)
-{
-    return x * 1'000'000'000;
 }
 
 // #include <ext/pb_ds/assoc_container.hpp>
@@ -442,8 +524,6 @@ using vtz                        = vec<tz>;
 const char sp                    = ' ';
 const char nl                    = '\n';
 
-#define var                 auto
-#define ref                 auto &
 #define perm                static constinit
 #define ascz(i, stop)       for (z i = 0; i < stop; i += 1)
 #define asc(i, start, stop) for (z i = start; i < stop; i += 1)
@@ -451,7 +531,6 @@ const char nl                    = '\n';
 #define scan(...)                                                                                                      \
     __VA_ARGS__;                                                                                                       \
     in(__VA_ARGS__)
-
 #ifndef print
 #define print(...)
 #endif
