@@ -400,8 +400,8 @@ template <typename t> struct pos
     {
         auto c = u(v) * u(w);
         if (zero(c)) return 0;
-        if (c > 0) return 1;
-        if (c < 0) return -1;
+        if (c > 0) return 1;  // left
+        if (c < 0) return -1; // right
         return 0;
     }
 
@@ -459,6 +459,105 @@ template <typename t> struct pos
     }
 
     auto operator<=>(const pos &o) const = default;
+};
+
+// template <typename t> struct rat
+// {
+//     t n, d;
+
+// constexpr rat() : n(0), d(1)
+// {
+// }
+
+// constexpr rat(t n0, t d0 = 1) : n(n0), d(d0)
+// {
+//     if (d < 0) n *= -1, d *= -1;
+// }
+
+// rat operator+(const rat &o)
+// {
+//     return rat(n * o.d + o.n * d, d * o.d);
+// }
+
+// rat operator-(const rat &o)
+// {
+//     return rat(n * o.d - o.n * d, d * o.d);
+// }
+
+// rat operator*(const rat &o)
+// {
+//     return rat(n * o.n, d * o.d);
+// }
+
+// rat operator/(const rat &o)
+// {
+//     return rat(n * o.d, d * o.n);
+// }
+
+// auto operator<=>(const rat &o)
+// {
+//     return __int128(n) * __int128(o.d) <=> __int128(o.n) * __int128(d);
+// }
+
+// auto normalize()
+// {
+//     t g  = gcd(llabs(n), d);
+//     n /= g, d /= g;
+// }
+// };
+
+struct polar
+{
+    using i128  = __int128;
+
+    long long u = 0, v = 0;
+    i128      r2      = 0;
+    bool      origin  = true;
+
+    constexpr polar() = default;
+
+    constexpr polar(long long x, long long y)
+    {
+        if (!(origin = (x == 0 and y == 0)))
+        {
+            r2 = i128(x) * i128(x) + i128(y) * i128(y);
+            u = x / igcd(x, y), v = y / igcd(x, y);
+        }
+    }
+
+    friend constexpr bool operator==(const polar &, const polar &) = default;
+
+    friend constexpr strong_ordering operator<=>(const polar &a, const polar &b)
+    {
+        if (a.origin and b.origin) return strong_ordering::equivalent;
+        if (a.origin) return strong_ordering::less;
+        if (b.origin) return strong_ordering::greater;
+        if (a.half() != b.half()) return a.half() ? strong_ordering::less : strong_ordering::greater;
+        auto cross = i128(a.u) * i128(b.v) - i128(a.v) * i128(b.u);
+        if (0 < cross) return strong_ordering::less;
+        if (cross < 0) return strong_ordering::greater;
+        if (a.r2 < b.r2) return strong_ordering::less;
+        if (b.r2 < a.r2) return strong_ordering::greater;
+        return strong_ordering::equivalent;
+    }
+
+  private:
+    constexpr long long igcd(long long a, long long b) const
+    {
+        if (a < 0) a *= -1;
+        if (b < 0) b *= -1;
+        while (b)
+        {
+            auto t = a % b;
+            a = b, b = t;
+        }
+        return a ? a : 1;
+    }
+
+    constexpr bool half() const
+    {
+        return v > 0 or v == 0 and u > 0;
+    }
 };
 
 template <typename t, t ini = t{}, typename first, typename... rest> auto mvec(first f, rest... r)
@@ -539,8 +638,6 @@ const char nl                    = '\n';
 
 int main()
 {
-    cin.tie(nullptr);
-    ios::sync_with_stdio(false);
-    cout << fixed << setprecision(9);
+    cin.tie(nullptr)->sync_with_stdio(false), cout << fixed << setprecision(9);
     const z inf = maxz;
 }
