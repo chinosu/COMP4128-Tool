@@ -560,6 +560,31 @@ struct polar
     }
 };
 
+template <typename t0, typename t1, t1 inf> vector<t1> dijkstra(vector<vector<pair<t0, t1>>> a, t0 s)
+{
+    vector<t1>                                                    d(a.size(), inf);
+    priority_queue<pair<t1, t0>, vector<pair<t1, t0>>, greater<>> q;
+    q.emplace(0, s);
+    while (q.size())
+    {
+        auto [du, u] = q.top();
+        q.pop();
+        if (d[u] != inf) continue;
+        d[u] = du;
+        for (auto [v, w] : a[u])
+        {
+            if (d[v] != inf) continue;
+            q.emplace(du + w, v);
+        }
+    }
+    return d;
+}
+
+template <typename t>
+constinit array<pair<t, t>, 4> directions{
+    {{t(0), t(1)}, {t(0), t(-1)}, {t(1), t(0)}, {t(-1), t(0)}}
+};
+
 template <typename t, t ini = t{}, typename first, typename... rest> auto mvec(first f, rest... r)
 {
     static_assert(is_integral_v<first>);
