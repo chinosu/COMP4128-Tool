@@ -634,10 +634,20 @@ bool wthn(const auto left, const auto mid, const auto right)
 // using statset                    = tree<z, null_type, less<z>, rb_tree_tag, tree_order_statistics_node_update>;
 // using statmset                   = tree<pz, null_type, less<pz>, rb_tree_tag, tree_order_statistics_node_update>;
 
+#define perm                static constinit
+#define ascz(i, stop)       for (z i = 0; i < stop; i += 1)
+#define asc(i, start, stop) for (z i = start; i < stop; i += 1)
+#define dsc(i, start, stop) for (z i = start; stop < i; i -= 1)
+#define scan(...)                                                                                                      \
+    __VA_ARGS__;                                                                                                       \
+    in(__VA_ARGS__)
+#ifndef print
+#define print(...)
+#endif
+
 using z                          = long long;
 using pz                         = pair<z, z>;
 using tz                         = tuple<z, z, z>;
-const z maxz                     = numeric_limits<z>::max();
 const z nil                      = 0;
 using str                        = string;
 template <typename t> using vec  = vector<t>;
@@ -650,19 +660,8 @@ using vtz                        = vec<tz>;
 const char sp                    = ' ';
 const char nl                    = '\n';
 
-#define perm                static constinit
-#define ascz(i, stop)       for (z i = 0; i < stop; i += 1)
-#define asc(i, start, stop) for (z i = start; i < stop; i += 1)
-#define dsc(i, start, stop) for (z i = start; stop < i; i -= 1)
-#define scan(...)                                                                                                      \
-    __VA_ARGS__;                                                                                                       \
-    in(__VA_ARGS__)
-#ifndef print
-#define print(...)
-#endif
-
 int main()
 {
     cin.tie(nullptr)->sync_with_stdio(false), cout << fixed << setprecision(9);
-    const z inf = maxz;
+    const z inf = numeric_limits<z>::max();
 }
