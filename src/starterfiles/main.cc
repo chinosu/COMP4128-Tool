@@ -609,14 +609,14 @@ int err(auto... x)
     return 0;
 }
 
-void imax(auto &a, const auto &b)
+bool imax(auto &a, const auto &b)
 {
-    a = max(a, b);
+    return a > b ? false : a = b, true;
 }
 
-void imin(auto &a, const auto &b)
+bool imin(auto &a, const auto &b)
 {
-    a = min(a, b);
+    return a < b ? false : a = b, true;
 }
 
 bool wthn(const auto left, const auto mid, const auto right)
