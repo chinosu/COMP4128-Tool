@@ -152,6 +152,17 @@ constexpr bool isprime(auto x)
     return true;
 }
 
+template <typename t> vector<t> primefactors(t x)
+{
+    vector<t> re;
+    for (t f = 2; f * f <= x; f++)
+    {
+        for (; x % f == 0; x /= f) re.push_back(f);
+    }
+    if (x != 1) re.push_back(x);
+    return re;
+}
+
 template <typename t, auto n> struct primesieve
 {
     t lp[n + 1]{};
