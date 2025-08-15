@@ -190,26 +190,24 @@ template <typename t, auto m> struct mod
     {
     }
 
-    constexpr auto operator+(const mod &o) const
+    constexpr mod &operator+=(const mod &o)
     {
-        return mod(val + o.val);
+        return val += o.val, val %= m, *this;
     }
 
-    constexpr auto operator*(const mod &o) const
+    constexpr mod &operator*=(const mod &o)
     {
-        return mod(val * o.val);
+        return val *= o.val, val %= m, *this;
     }
 
-    constexpr auto operator+=(const mod &o)
+    friend constexpr mod operator+(mod a, const mod &b)
     {
-        val += o.val, val %= m;
-        return *this;
+        return a += b, a;
     }
 
-    constexpr auto operator*=(const mod &o)
+    friend constexpr mod operator*(mod a, const mod &b)
     {
-        val *= o.val, val %= m;
-        return *this;
+        return a *= b, a;
     }
 
     constexpr auto pow(auto p) const
@@ -219,8 +217,7 @@ template <typename t, auto m> struct mod
         while (0 < p)
         {
             if (p & 1) ret *= x;
-            x *= x;
-            p /= 2;
+            x *= x, p /= 2;
         }
         return ret;
     }
