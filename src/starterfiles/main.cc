@@ -214,7 +214,7 @@ template <typename t, auto m> struct mod
 
     constexpr auto pow(auto p) const
     {
-        mod x  = *this, ret;
+        mod x  = *this, ret(0);
         ret   += 1;
         while (0 < p)
         {
@@ -296,6 +296,35 @@ template <typename t> struct matrix
         return a;
     }
 };
+
+// template <typename t> vector<t> permutation_matrix_pow(vector<t> &p, t k)
+// {
+//     t                 n = p.size();
+//     vector<t>         re(n, -1), vis(n, 0), id(n), pos(n);
+//     vector<vector<t>> cycles;
+//     for (t i = 0; i < n; i += 1)
+//     {
+//         if (vis[i]) continue;
+//         cycles.emplace_back();
+//         for (t x = i; !vis[x]; x = p[x])
+//         {
+//             vis[x] = 1;
+//             pos[x] = cycles.back().size();
+//             id[x]  = cycles.size();
+//             cycles.back().emplace_back(x);
+//         }
+//     }
+//     for (auto &c : cycles)
+//     {
+//         t l = c.size(), s = (k % l + l) % l;
+//         for (t i = 0; i < l; i += 1)
+//         {
+//             t at = c[i], to = c[(i + s) % l];
+//             re[at] = to;
+//         }
+//     }
+//     return re;
+// }
 
 template <auto n> struct directed_cycle
 {
