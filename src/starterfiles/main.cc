@@ -186,7 +186,7 @@ template <typename t, auto m> struct mod
 {
     t val;
 
-    constexpr mod(t v) : val((v % m + m) % m)
+    constexpr mod(t v = 0) : val((v % m + m) % m)
     {
     }
 
