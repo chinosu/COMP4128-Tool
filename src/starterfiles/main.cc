@@ -222,9 +222,9 @@ template <typename t, auto m> struct mod
         return ret;
     }
 
-    constexpr auto inv() const
+    constexpr auto inv()
+        requires(isprime(m))
     {
-        static_assert(isprime(m));
         return pow(m - 2);
     }
 
