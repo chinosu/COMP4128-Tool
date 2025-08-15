@@ -231,7 +231,18 @@ template <typename t, auto m> struct mod
         return pow(m - 2);
     }
 
-    constexpr operator t() const
+    friend istream &operator>>(istream &is, const mod &x)
+    {
+        if (is >> x.val) x.val = (x.val % m + m) % m;
+        return is;
+    }
+
+    friend ostream &operator<<(ostream &os, const mod &x)
+    {
+        return os << x.val;
+    }
+
+    explicit constexpr operator t() const
     {
         return val;
     }
