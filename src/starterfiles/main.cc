@@ -628,6 +628,123 @@ template <typename t0, typename t1, t1 inf> vector<t1> dijkstra(vector<vector<pa
     return d;
 }
 
+template <integral t, t none = numeric_limits<t>::max()>
+pair<vector<vector<t>>, vector<t>> scc_kosaraju(vector<vector<t>> &ad)
+{
+    t         n = ad.size();
+    vector<t> order;
+    order.reserve(n);
+    vector<char> use(n, false);
+    auto         dfs0 = [&](auto self, t u) -> void
+    {
+        use[u] = true;
+        for (t v : ad[u])
+        {
+            if (!use[v]) self(self, v);
+        }
+        order.emplace_back(u);
+    };
+    for (t u = 0; u < n; u += 1)
+    {
+        if (!use[u]) dfs0(dfs0, u);
+    }
+
+    vector<vector<t>> adr(n);
+    for (t u = 0; u < n; u += 1)
+    {
+        for (t v : ad[u]) adr[v].emplace_back(u);
+    }
+
+    vector<t> id(n, none);
+    auto      dfs1 = [&](auto self, t u, t c) -> void
+    {
+        id[u] = c;
+        for (t v : adr[u])
+        {
+            if (id[v] == none) self(self, v, c);
+        }
+    };
+    t c = 0;
+    for (t u : order | views::reverse)
+    {
+        if (id[u] == none) dfs1(dfs1, u, c++);
+    }
+
+    vector<vector<t>> dag(c);
+    for (t u = 0; u < n; u += 1)
+    {
+        for (t v : ad[u])
+        {
+            if (id[u] != id[v]) dag[id[u]].emplace_back(id[v]);
+        }
+    }
+    for (auto &v : dag) sort(v.begin(), v.end()), v.erase(unique(v.begin(), v.end()), v.end());
+    return {dag, id};
+}
+
+template <integral t, t none = numeric_limits<t>::max()>
+tuple<vector<vector<t>>, vector<pair<t, t>>, vector<t>> bridge_tree(vector<vector<t>> &ad)
+{
+    t                  n = ad.size(), c = 0;
+
+    vector<t>          pre(n, none), low(n, 0), id(n, none);
+    vector<char>       use(n, false);
+    vector<pair<t, t>> bridges;
+    auto               dfs = [&](auto self, t u, t p = none) -> void
+    {
+        use[u] = true, pre[u] = low[u] = c++;
+        for (t v : ad[u])
+        {
+            if (p == v) continue;
+            if (use[v]) low[u] = min(low[u], pre[v]);
+            else
+            {
+                self(self, v, u);
+                low[u] = min(low[u], low[v]);
+                if (pre[u] < low[v]) bridges.emplace_back(u, v);
+            }
+        }
+    };
+    for (t u = 0; u < n; u += 1)
+    {
+        if (!use[u]) dfs(dfs, u);
+    }
+
+    auto isbridge = bridges;
+    for (auto &[u, v] : isbridge)
+    {
+        if (v < u) swap(u, v);
+    }
+    sort(isbridge.begin(), isbridge.end());
+
+    c = 0;
+    for (t u = 0; u < n; u += 1)
+    {
+        if (id[u] != none) continue;
+        deque<t> s;
+        id[u] = c, s.emplace_back(u);
+        while (s.size())
+        {
+            t v = s.front();
+            s.pop_front();
+            for (t w : ad[v])
+            {
+                if (id[w] != none) continue;
+                if (binary_search(isbridge.begin(), isbridge.end(), v < w ? make_pair(v, w) : make_pair(w, v)))
+                {
+                    continue;
+                }
+                id[w] = c, s.emplace_back(w);
+            }
+        }
+        c++;
+    }
+
+    vector<vector<t>> tree(c);
+    for (auto [u, v] : bridges) tree[id[u]].emplace_back(id[v]);
+    return {tree, bridges, id};
+}
+
 template <typename t>
 constinit array<pair<t, t>, 4> directions{
     {{t(0), t(1)}, {t(0), t(-1)}, {t(1), t(0)}, {t(-1), t(0)}}
