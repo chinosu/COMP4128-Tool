@@ -799,6 +799,60 @@ bool wthn(const auto left, const auto mid, const auto right)
 // using statset                    = tree<z, null_type, less<z>, rb_tree_tag, tree_order_statistics_node_update>;
 // using statmset                   = tree<pz, null_type, less<pz>, rb_tree_tag, tree_order_statistics_node_update>;
 
+namespace _lambda
+{
+
+template <typename t> constexpr t &&fwd(remove_reference_t<t> &x) noexcept
+{
+    return static_cast<t &&>(x);
+}
+
+template <typename t> constexpr t &&fwd(remove_reference_t<t> &&x) = delete;
+
+template <int> constexpr array<char, 0> nth_arg() noexcept
+{
+    return {};
+}
+
+template <int n, class h, class... t> constexpr decltype(auto) nth_arg(h &&head, t &&...tail) noexcept
+{
+    if constexpr (n == 0) return _lambda::fwd<h>(head);
+    else return nth_arg<n - 1>(_lambda::fwd<t>(tail)...);
+}
+
+template <int n, class... args> using nth_arg_t = decltype(_lambda::nth_arg<n>(declval<args>()...));
+
+#define _lambda_req_param_1 _lambda::nth_arg_t<0, lambda_args...> _1
+#define _lambda_req_param_2 _lambda_req_param_1, _lambda::nth_arg_t<1, lambda_args...> _2
+#define _lambda_req_param_3 _lambda_req_param_2, _lambda::nth_arg_t<2, lambda_args...> _3
+#define _lambda_req_param_4 _lambda_req_param_3, _lambda::nth_arg_t<3, lambda_args...> _4
+#define _lambda_req_param_5 _lambda_req_param_4, _lambda::nth_arg_t<4, lambda_args...> _5
+#define _lambda_req_param_6 _lambda_req_param_5, _lambda::nth_arg_t<5, lambda_args...> _6
+#define _lambda_req_param_7 _lambda_req_param_6, _lambda::nth_arg_t<6, lambda_args...> _7
+#define _lambda_req_param_8 _lambda_req_param_7, _lambda::nth_arg_t<7, lambda_args...> _8
+#define _lambda_req(...)                                                                                               \
+    requires(_lambda_req_param_8) {                                                                                    \
+        __VA_ARGS__;                                                                                                   \
+    }
+#define _lambda_define_locals()                                                                                        \
+    auto &&_1 = _lambda::nth_arg<0>(_lambda::fwd<lambda_args>(_args)...);                                              \
+    auto &&_2 = _lambda::nth_arg<1>(_lambda::fwd<lambda_args>(_args)...);                                              \
+    auto &&_3 = _lambda::nth_arg<2>(_lambda::fwd<lambda_args>(_args)...);                                              \
+    auto &&_4 = _lambda::nth_arg<3>(_lambda::fwd<lambda_args>(_args)...);                                              \
+    auto &&_5 = _lambda::nth_arg<4>(_lambda::fwd<lambda_args>(_args)...);                                              \
+    auto &&_6 = _lambda::nth_arg<5>(_lambda::fwd<lambda_args>(_args)...);                                              \
+    auto &&_7 = _lambda::nth_arg<6>(_lambda::fwd<lambda_args>(_args)...);                                              \
+    auto &&_8 = _lambda::nth_arg<7>(_lambda::fwd<lambda_args>(_args)...)
+#define lambda(...)                                                                                                    \
+    [&]<typename... lambda_args>(lambda_args &&..._args) mutable noexcept -> decltype(auto)                            \
+        requires _lambda_req                                                                                           \
+    (__VA_ARGS__)                                                                                                      \
+    {                                                                                                                  \
+        _lambda_define_locals();                                                                                       \
+        return (__VA_ARGS__);                                                                                          \
+    }
+} // namespace _lambda
+
 #define perm                static constinit
 #define ascz(i, stop)       for (z i = 0; i < stop; i += 1)
 #define asc(i, start, stop) for (z i = start; i < stop; i += 1)
