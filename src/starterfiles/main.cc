@@ -2,7 +2,7 @@
 #pragma GCC optimize("Ofast,no-stack-protector,unroll-loops,fast-math,O3")
 #include <bits/stdc++.h>
 using namespace std;
-using namespace std::views;
+namespace vi = std::views;
 
 template <typename t, auto s> struct dsu
 {
@@ -858,6 +858,7 @@ template <int n, class... args> using nth_arg_t = decltype(_lambda::nth_arg<n>(d
 #define ascz(i, stop)       for (z i = 0; i < stop; i += 1)
 #define asc(i, start, stop) for (z i = start; i < stop; i += 1)
 #define dsc(i, start, stop) for (z i = start; stop < i; i -= 1)
+#define foreach(var, ...)   for (auto var : __VA_ARGS__)
 #define scan(...)                                                                                                      \
     __VA_ARGS__;                                                                                                       \
     in(__VA_ARGS__)
