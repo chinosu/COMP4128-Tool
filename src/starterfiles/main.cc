@@ -2,6 +2,7 @@
 #pragma GCC optimize("Ofast,no-stack-protector,unroll-loops,fast-math,O3")
 #include <bits/stdc++.h>
 using namespace std;
+using namespace std::views;
 
 template <typename t, auto s> struct dsu
 {
