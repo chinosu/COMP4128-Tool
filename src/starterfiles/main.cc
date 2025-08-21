@@ -2,6 +2,7 @@
 #pragma GCC optimize("Ofast,no-stack-protector,unroll-loops,fast-math,O3")
 #include <bits/stdc++.h>
 using namespace std;
+namespace rn = std::ranges;
 namespace vi = std::views;
 
 template <typename t, auto s> struct dsu
@@ -866,7 +867,7 @@ template <int n, class... args> using nth_arg_t = decltype(_lambda::nth_arg<n>(d
 #define print(...)
 #endif
 
-using z                          = long long;
+using z                          = int;
 using pz                         = pair<z, z>;
 using tz                         = tuple<z, z, z>;
 const z nil                      = 0;
