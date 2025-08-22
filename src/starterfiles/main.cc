@@ -185,7 +185,7 @@ template <typename t, auto n> struct primesieve
     constexpr pair<vector<t>, vector<t>> factors(t x)
     {
         pair<vector<t>, vector<t>> ret;
-        while (x)
+        while (2 <= x)
         {
             if (ret.first.size() and ret.first.back() == lp[x]) ret.second.back() += 1;
             else ret.first.emplace_back(lp[x]), ret.second.emplace_back(1);
