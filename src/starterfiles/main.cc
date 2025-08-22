@@ -89,6 +89,7 @@ template <int n, int m, typename f, f flowinf> struct flow
     void add(int u, int v, f w)
     {
         e[++tot].next = hd[u], hd[u] = tot, e[tot].to = v, e[tot].cap = w;
+        // change `0` to `w` to make network undirected
         e[++tot].next = hd[v], hd[v] = tot, e[tot].to = u, e[tot].cap = 0;
     }
 
@@ -96,7 +97,7 @@ template <int n, int m, typename f, f flowinf> struct flow
     {
         copy(hd, hd + n, cur);
         fill(dis, dis + n, -1);
-        q[qhd = qtl = 1] = s;
+        q[qhd = qtl = 0] = s;
         dis[s]           = 0;
         while (qhd <= qtl)
         {
@@ -124,7 +125,7 @@ template <int n, int m, typename f, f flowinf> struct flow
             f nw   = min(rem, e[i].cap);
             if (nw != 0 and dis[v] == dis[u] + 1)
             {
-                int ret       = dfs(v, nw);
+                f ret         = dfs(v, nw);
                 flow         += ret;
                 rem          -= ret;
                 e[i].cap     -= ret;
