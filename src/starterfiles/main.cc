@@ -256,6 +256,13 @@ template <typename t, auto m> struct mod
     {
         return val;
     }
+
+    template <auto n> friend void factorial_table(auto &f, auto &finv)
+    {
+        f[0] = finv[0] = 1;
+        for (size_t i = 1; i < n; i += 1) f[i] = i * f[i - 1];
+        for (size_t i = 1; i < n; i += 1) finv[i] = f[i].inv();
+    }
 };
 
 template <typename t> struct matrix
@@ -867,7 +874,7 @@ template <int n, class... args> using nth_arg_t = decltype(_lambda::nth_arg<n>(d
 #define print(...)
 #endif
 
-using z                          = int;
+using z                          = long long;
 using pz                         = pair<z, z>;
 using tz                         = tuple<z, z, z>;
 const z nil                      = 0;
